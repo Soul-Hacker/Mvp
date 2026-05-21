@@ -34,18 +34,27 @@
                     <span>Class 11-12 Laboratory</span>
                 </div>
             </div>
-            <nav class="nav-tabs">
+            <nav class="nav-tabs" id="dynamic-nav-tabs">
                 <button class="tab-btn active" data-tab="mechanics" id="tab-mechanics">
                     <span class="icon">🚀</span>
-                    <span class="btn-label">Mechanics: Projectile Lab</span>
+                    <span class="btn-label">
+                        <span>Mechanics: Projectile Lab</span>
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Class 11</span>
+                    </span>
                 </button>
                 <button class="tab-btn disabled" data-tab="electrostatics" id="tab-electrostatics" disabled>
                     <span class="icon">⚡</span>
-                    <span class="btn-label">Class 12: Electrostatics <span class="badge">Locked</span></span>
+                    <span class="btn-label">
+                        <span>Class 12: Electrostatics</span>
+                        <span class="badge">Locked</span>
+                    </span>
                 </button>
                 <button class="tab-btn disabled" data-tab="optics" id="tab-optics" disabled>
                     <span class="icon">👁️</span>
-                    <span class="btn-label">Class 12: Wave Optics <span class="badge">Locked</span></span>
+                    <span class="btn-label">
+                        <span>Class 12: Wave Optics</span>
+                        <span class="badge">Locked</span>
+                    </span>
                 </button>
             </nav>
             <div class="sidebar-footer">
@@ -59,10 +68,10 @@
             <header class="top-bar">
                 <div class="header-main">
                     <h1 id="current-topic-title">Kinematics: 2D Projectile Motion</h1>
-                    <p>Observe how independent horizontal and vertical velocities compose standard parabolic trajectories.</p>
+                    <p id="current-topic-desc">Observe how independent horizontal and vertical velocities compose standard parabolic trajectories.</p>
                 </div>
                 <div class="header-badges">
-                    <span class="badge-pill mechanics">Mechanics Sandbox</span>
+                    <span class="badge-pill mechanics" id="current-topic-badge">Mechanics Sandbox</span>
                 </div>
             </header>
 
@@ -90,55 +99,10 @@
                         <p class="subtitle">Modify environment parameters dynamically</p>
                     </div>
                     
-                    <div class="control-groups-container">
-                        <div class="control-group">
-                            <div class="control-label-row">
-                                <label for="speedSlider">Initial Velocity ($u$):</label>
-                                <span class="val-display"><span id="speedVal" class="numeric-val">25</span> m/s</span>
-                            </div>
-                            <input type="range" id="speedSlider" min="10" max="50" value="25" step="1">
-                            <div class="slider-ticks">
-                                <span>10 m/s</span>
-                                <span>30 m/s</span>
-                                <span>50 m/s</span>
-                            </div>
-                        </div>
+                    <!-- DYNAMIC CONTROLS INJECTED HERE -->
+                    <div class="control-groups-container" id="dynamic-controls-deck"></div>
 
-                        <div class="control-group">
-                            <div class="control-label-row">
-                                <label for="angleSlider">Launch Angle ($\theta$):</label>
-                                <span class="val-display"><span id="angleVal" class="numeric-val">45</span>°</span>
-                            </div>
-                            <input type="range" id="angleSlider" min="5" max="85" value="45" step="1">
-                            <div class="slider-ticks">
-                                <span>5°</span>
-                                <span>45°</span>
-                                <span>85°</span>
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <div class="control-label-row">
-                                <label for="gravitySlider">Acceleration ($g$):</label>
-                                <span class="val-display"><span id="gravityVal" class="numeric-val">9.8</span> m/s²</span>
-                            </div>
-                            <input type="range" id="gravitySlider" min="1.6" max="25" value="9.8" step="0.1">
-                            <div class="slider-ticks">
-                                <span>1.6 (Moon)</span>
-                                <span>9.8 (Earth)</span>
-                                <span>25.0 (Heavy)</span>
-                            </div>
-                        </div>
-
-                        <div class="checkbox-group">
-                            <label class="custom-checkbox">
-                                <input type="checkbox" id="vectorToggle" checked>
-                                <span class="checkbox-box"></span>
-                                <span class="checkbox-text">Show Vector Component Arrows</span>
-                            </label>
-                        </div>
-                    </div>
-
+                    <!-- Simulator Control Actions -->
                     <div class="button-row">
                         <button id="launchBtn" class="btn primary">
                             <span class="btn-icon">🚀</span>
@@ -156,128 +120,42 @@
                         </button>
                     </div>
 
-                    <!-- Live Physics Metrics Telemetry -->
-                    <div class="telemetry-panel">
-                        <h4>Live Telemetry Readings</h4>
-                        <div class="telemetry-grid">
-                            <div class="metric" id="metric-range-card">
-                                <span class="label">Theoretical Range (R)</span>
-                                <div class="value-wrap">
-                                    <span id="metricRange" class="numeric-val">0.00</span>
-                                    <span class="unit">m</span>
-                                </div>
-                            </div>
-                            <div class="metric" id="metric-height-card">
-                                <span class="label">Max Height (H)</span>
-                                <div class="value-wrap">
-                                    <span id="metricHeight" class="numeric-val">0.00</span>
-                                    <span class="unit">m</span>
-                                </div>
-                            </div>
-                            <div class="metric" id="metric-time-card">
-                                <span class="label">Time of Flight (T)</span>
-                                <div class="value-wrap">
-                                    <span id="metricTime" class="numeric-val">0.00</span>
-                                    <span class="unit">s</span>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- DYNAMIC DASHBOARD TELEMETRY INJECTED HERE -->
+                    <div class="telemetry-panel" id="dashboard-panel">
+                        <h4 id="dashboard-title">Live Telemetry Readings</h4>
+                        <div class="telemetry-grid" id="dynamic-dashboard-deck"></div>
                     </div>
 
-                    <!-- Instantaneous Vector Inspector -->
+                    <!-- DYNAMIC INSTANTANEOUS INSPECTOR INJECTED HERE -->
                     <div class="telemetry-panel inspector-panel" id="inspector-panel">
-                        <h4>Instantaneous Vector Inspector</h4>
-                        <div class="telemetry-grid inspector-grid">
-                            <div class="metric" id="metric-time-elapsed-card">
-                                <span class="label">Time Elapsed ($t$)</span>
-                                <div class="value-wrap">
-                                    <span id="metricTimeElapsed" class="numeric-val">0.00</span>
-                                    <span class="unit">s</span>
-                                </div>
-                            </div>
-                            <div class="metric" id="metric-pos-card">
-                                <span class="label">Position ($x, y$)</span>
-                                <div class="value-wrap">
-                                    <span id="metricPos" class="numeric-val">0.00, 0.00</span>
-                                    <span class="unit">m</span>
-                                </div>
-                            </div>
-                            <div class="metric" id="metric-speed-card">
-                                <span class="label">Instant Speed ($v$)</span>
-                                <div class="value-wrap">
-                                    <span id="metricSpeed" class="numeric-val">0.00</span>
-                                    <span class="unit">m/s</span>
-                                </div>
-                            </div>
-                            <div class="metric" id="metric-angle-card">
-                                <span class="label">Vector Angle ($\theta_v$)</span>
-                                <div class="value-wrap">
-                                    <span id="metricVecAngle" class="numeric-val">0.00</span>
-                                    <span class="unit">°</span>
-                                </div>
-                            </div>
-                            <div class="metric" id="metric-vx-card">
-                                <span class="label">Horizontal ($v_x$)</span>
-                                <div class="value-wrap">
-                                    <span id="metricVx" class="numeric-val">0.00</span>
-                                    <span class="unit">m/s</span>
-                                </div>
-                            </div>
-                            <div class="metric" id="metric-vy-card">
-                                <span class="label">Vertical ($v_y$)</span>
-                                <div class="value-wrap">
-                                    <span id="metricVy" class="numeric-val">0.00</span>
-                                    <span class="unit">m/s</span>
-                                </div>
-                            </div>
-                        </div>
+                        <h4 id="inspector-title">Instantaneous Vector Inspector</h4>
+                        <div class="telemetry-grid inspector-grid" id="dynamic-inspector-deck"></div>
                     </div>
 
-                    <!-- Theoretical Time Solver -->
+                    <!-- DYNAMIC THEORETICAL SOLVER INJECTED HERE -->
                     <div class="telemetry-panel solver-panel" id="solver-panel">
-                        <h4>Theoretical Time Solver</h4>
-                        <p class="subtitle" style="font-size: 0.72rem; color: var(--text-dim); margin-top: -6px; margin-bottom: 12px;">Evaluate exact kinematics at any timestamp</p>
+                        <h4 id="solver-title">Theoretical Time Solver</h4>
+                        <p class="subtitle" id="solver-subtitle" style="font-size: 0.72rem; color: var(--text-dim); margin-top: -6px; margin-bottom: 12px;">Evaluate exact kinematics at any timestamp</p>
                         
-                        <div class="control-group" style="margin-bottom: 16px;">
+                        <div class="control-group" id="solver-control-group" style="margin-bottom: 16px;">
                             <div class="control-label-row">
-                                <label for="timeSolverInput" style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Target Time ($t$):</label>
-                                <span class="val-display" style="background: rgba(245, 158, 11, 0.08); color: var(--accent-amber);"><span id="solverTimeVal" class="numeric-val">0.00</span> s</span>
+                                <label for="timeSolverInput" id="solver-slider-label">Target Time ($t$):</label>
+                                <span class="val-display" style="background: rgba(245, 158, 11, 0.08); color: var(--accent-amber);"><span id="solverTimeVal" class="numeric-val">0.00</span> <span id="solver-unit-label">s</span></span>
                             </div>
                             <input type="range" id="timeSolverInput" min="0" max="1" value="0" step="0.01" style="accent-color: var(--accent-amber);">
                         </div>
 
-                        <div class="telemetry-grid solver-grid">
-                            <div class="metric" id="solver-pos-card">
-                                <span class="label">Position ($x, y$)</span>
-                                <div class="value-wrap">
-                                    <span id="solverPos" class="numeric-val">0.00, 0.00</span>
-                                    <span class="unit">m</span>
-                                </div>
-                            </div>
-                            <div class="metric" id="solver-speed-card">
-                                <span class="label">Velocity ($v$)</span>
-                                <div class="value-wrap">
-                                    <span id="solverSpeed" class="numeric-val">0.00</span>
-                                    <span class="unit">m/s</span>
-                                </div>
-                            </div>
-                            <div class="metric" id="solver-angle-card">
-                                <span class="label">Vector Angle ($\theta_v$)</span>
-                                <div class="value-wrap">
-                                    <span id="solverAngle" class="numeric-val">0.00</span>
-                                    <span class="unit">°</span>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="telemetry-grid solver-grid" id="dynamic-solver-deck"></div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Scripts -->
-    <script src="src/engine.js"></script>
-    <script src="src/projectiles.js"></script>
+    <!-- Script Pipeline (CORS-safe namespaced scripts) -->
+    <script src="src/core/engine.js"></script>
+    <script src="src/core/chapter-base.js"></script>
+    <script src="src/chapters/projectile.js"></script>
     <script src="src/app.js"></script>
 </body>
 </html>
