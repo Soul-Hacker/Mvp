@@ -188,6 +188,13 @@
                     <div class="telemetry-panel inspector-panel" id="inspector-panel">
                         <h4>Instantaneous Vector Inspector</h4>
                         <div class="telemetry-grid inspector-grid">
+                            <div class="metric" id="metric-time-elapsed-card">
+                                <span class="label">Time Elapsed ($t$)</span>
+                                <div class="value-wrap">
+                                    <span id="metricTimeElapsed" class="numeric-val">0.00</span>
+                                    <span class="unit">s</span>
+                                </div>
+                            </div>
                             <div class="metric" id="metric-pos-card">
                                 <span class="label">Position ($x, y$)</span>
                                 <div class="value-wrap">
@@ -202,6 +209,13 @@
                                     <span class="unit">m/s</span>
                                 </div>
                             </div>
+                            <div class="metric" id="metric-angle-card">
+                                <span class="label">Vector Angle ($\theta_v$)</span>
+                                <div class="value-wrap">
+                                    <span id="metricVecAngle" class="numeric-val">0.00</span>
+                                    <span class="unit">°</span>
+                                </div>
+                            </div>
                             <div class="metric" id="metric-vx-card">
                                 <span class="label">Horizontal ($v_x$)</span>
                                 <div class="value-wrap">
@@ -214,6 +228,44 @@
                                 <div class="value-wrap">
                                     <span id="metricVy" class="numeric-val">0.00</span>
                                     <span class="unit">m/s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Theoretical Time Solver -->
+                    <div class="telemetry-panel solver-panel" id="solver-panel">
+                        <h4>Theoretical Time Solver</h4>
+                        <p class="subtitle" style="font-size: 0.72rem; color: var(--text-dim); margin-top: -6px; margin-bottom: 12px;">Evaluate exact kinematics at any timestamp</p>
+                        
+                        <div class="control-group" style="margin-bottom: 16px;">
+                            <div class="control-label-row">
+                                <label for="timeSolverInput" style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Target Time ($t$):</label>
+                                <span class="val-display" style="background: rgba(245, 158, 11, 0.08); color: var(--accent-amber);"><span id="solverTimeVal" class="numeric-val">0.00</span> s</span>
+                            </div>
+                            <input type="range" id="timeSolverInput" min="0" max="1" value="0" step="0.01" style="accent-color: var(--accent-amber);">
+                        </div>
+
+                        <div class="telemetry-grid solver-grid">
+                            <div class="metric" id="solver-pos-card">
+                                <span class="label">Position ($x, y$)</span>
+                                <div class="value-wrap">
+                                    <span id="solverPos" class="numeric-val">0.00, 0.00</span>
+                                    <span class="unit">m</span>
+                                </div>
+                            </div>
+                            <div class="metric" id="solver-speed-card">
+                                <span class="label">Velocity ($v$)</span>
+                                <div class="value-wrap">
+                                    <span id="solverSpeed" class="numeric-val">0.00</span>
+                                    <span class="unit">m/s</span>
+                                </div>
+                            </div>
+                            <div class="metric" id="solver-angle-card">
+                                <span class="label">Vector Angle ($\theta_v$)</span>
+                                <div class="value-wrap">
+                                    <span id="solverAngle" class="numeric-val">0.00</span>
+                                    <span class="unit">°</span>
                                 </div>
                             </div>
                         </div>

@@ -537,16 +537,20 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .inspector-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 10px;
 }
 
 .inspector-grid .metric {
-    padding: 12px 6px;
+    padding: 10px 4px;
 }
 
 .inspector-grid .numeric-val {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
+}
+
+#metric-time-elapsed-card .numeric-val {
+    color: var(--text-main);
 }
 
 #metric-pos-card .numeric-val {
@@ -559,6 +563,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
     text-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
 }
 
+#metric-angle-card .numeric-val {
+    color: #f43f5e; /* Rose pink for vector angles */
+    text-shadow: 0 0 10px rgba(244, 63, 94, 0.15);
+}
+
 #metric-vx-card .numeric-val {
     color: var(--accent-emerald);
     text-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
@@ -567,6 +576,42 @@ input[type="range"]::-webkit-slider-thumb:hover {
 #metric-vy-card .numeric-val {
     color: var(--accent-violet);
     text-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+}
+
+/* Solver Panel and Grid */
+.solver-panel {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+.solver-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.solver-grid .metric {
+    padding: 10px 4px;
+}
+
+.solver-grid .numeric-val {
+    font-size: 0.88rem;
+}
+
+#solver-pos-card .numeric-val {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 8px rgba(6, 182, 212, 0.15);
+}
+
+#solver-speed-card .numeric-val {
+    color: var(--accent-indigo);
+    text-shadow: 0 0 8px rgba(99, 102, 241, 0.15);
+}
+
+#solver-angle-card .numeric-val {
+    color: #f43f5e;
+    text-shadow: 0 0 8px rgba(244, 63, 94, 0.15);
 }
 
 /* Dynamic State Shading & Shadows */

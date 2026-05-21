@@ -90,6 +90,7 @@ class PhysicsEngine {
         
         // Callbacks
         this.onUpdateCallback = null;
+        this.ghostPreview = null; // Predictive Time Solver state
         
         // High-DPI handling & Resizing
         this.resize();
@@ -151,7 +152,7 @@ class PhysicsEngine {
         
         // Choose conservative scale to fit both width and height, constrained to reasonable ranges
         const targetScale = Math.min(scaleX, scaleY);
-        this.scale = Math.min(Math.max(targetScale, 4), 30);
+        this.scale = Math.min(Math.max(targetScale, 0.1), 50);
         
         // Update display indicator if exists
         const scaleIndicator = document.getElementById('scaleIndicator');
@@ -187,40 +188,62 @@ class PhysicsEngine {
         for (const proj of this.projectiles) {
             proj.draw(this);
         }
+
+        // Draw the ghost predictive preview (Time Solver target)
+        this.drawGhostPreview();
     }
 
-    // Background fine grid lines
+    // Background dynamic grid lines
     drawGrid() {
-        const spacing = 10; // Major grid spacing in meters
+        // Dynamic grid spacing based on current physical scale (pixels per meter)
+        // Aim for a major grid line roughly every 60-150 pixels on screen
+        const idealSpacing = 80 / this.scale;
+        
+        // Find the best matching round step
+        const roundSteps = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+        let spacing = 10;
+        let bestDiff = Infinity;
+        for (const step of roundSteps) {
+            const diff = Math.abs(step - idealSpacing);
+            if (diff < bestDiff) {
+                bestDiff = diff;
+                spacing = step;
+            }
+        }
+        
+        const minorSpacing = spacing % 5 === 0 ? spacing / 5 : spacing / 2;
         const numLinesX = Math.ceil(this.logicalWidth / (spacing * this.scale));
         const numLinesY = Math.ceil(this.logicalHeight / (spacing * this.scale));
         
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
         this.ctx.lineWidth = 1;
         
-        // Minor grid lines every 2 meters
-        const minorSpacing = 2;
+        // Minor grid lines
         this.ctx.beginPath();
-        for (let i = 0; i * minorSpacing * this.scale < this.logicalWidth; i++) {
+        // Since minor spacing can be small, cap the loops to avoid hangs
+        const maxMinorLinesX = Math.ceil(this.logicalWidth / (minorSpacing * this.scale));
+        const maxMinorLinesY = Math.ceil(this.logicalHeight / (minorSpacing * this.scale));
+        
+        for (let i = 0; i <= Math.min(maxMinorLinesX, 500); i++) {
             const px = this.toScreenX(i * minorSpacing);
             this.ctx.moveTo(px, 0);
             this.ctx.lineTo(px, this.logicalHeight);
         }
-        for (let j = 0; j * minorSpacing * this.scale < this.logicalHeight; j++) {
+        for (let j = 0; j <= Math.min(maxMinorLinesY, 500); j++) {
             const py = this.toScreenY(j * minorSpacing);
             this.ctx.moveTo(0, py);
             this.ctx.lineTo(this.logicalWidth, py);
         }
         this.ctx.stroke();
 
-        // Major grid lines every 10 meters
+        // Major grid lines
         this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
         this.ctx.fillStyle = '#64748b'; // grid labels
         this.ctx.font = '500 10px "Fira Code", monospace';
         this.ctx.beginPath();
         
-        // Vertical grids
-        for (let i = 0; i < numLinesX; i++) {
+        // Vertical major grids
+        for (let i = 0; i <= Math.min(numLinesX, 100); i++) {
             const mVal = i * spacing;
             const px = this.toScreenX(mVal);
             
@@ -233,8 +256,8 @@ class PhysicsEngine {
             }
         }
         
-        // Horizontal grids
-        for (let j = 0; j < numLinesY; j++) {
+        // Horizontal major grids
+        for (let j = 0; j <= Math.min(numLinesY, 100); j++) {
             const mVal = j * spacing;
             const py = this.toScreenY(mVal);
             
@@ -243,7 +266,8 @@ class PhysicsEngine {
             
             // Y-axis label
             if (mVal > 0) {
-                this.ctx.fillText(`${mVal}m`, this.originOffset.x - 32, py + 4);
+                const labelOffset = mVal >= 1000 ? 44 : 32;
+                this.ctx.fillText(`${mVal}m`, this.originOffset.x - labelOffset, py + 4);
             }
         }
         this.ctx.stroke();
@@ -345,5 +369,106 @@ class PhysicsEngine {
         if (hasActive) {
             requestAnimationFrame((t) => this.tick(t));
         }
+    }
+
+    // Draw the ghost predictive preview (Time Solver target)
+    drawGhostPreview() {
+        if (!this.ghostPreview) return;
+        
+        const gp = this.ghostPreview;
+        const sx = this.toScreenX(gp.x);
+        const sy = this.toScreenY(gp.y);
+        
+        // Do not draw if below ground
+        if (gp.y < 0) return;
+
+        this.ctx.save();
+        
+        // 1. Draw concentric rose-pink preview halos
+        this.ctx.strokeStyle = 'rgba(244, 63, 94, 0.7)'; // Rose pink
+        this.ctx.lineWidth = 1.5;
+        this.ctx.setLineDash([3, 3]);
+        this.ctx.beginPath();
+        this.ctx.arc(sx, sy, 7, 0, Math.PI * 2);
+        this.ctx.stroke();
+        
+        this.ctx.strokeStyle = 'rgba(244, 63, 94, 0.3)';
+        this.ctx.beginPath();
+        this.ctx.arc(sx, sy, 12, 0, Math.PI * 2);
+        this.ctx.stroke();
+        
+        // 2. Draw faint coordinate projection lines
+        const groundY = this.toScreenY(0);
+        const originX = this.originOffset.x;
+        
+        this.ctx.strokeStyle = 'rgba(244, 63, 94, 0.3)';
+        this.ctx.setLineDash([2, 4]);
+        this.ctx.beginPath();
+        this.ctx.moveTo(sx, sy);
+        this.ctx.lineTo(sx, groundY);
+        this.ctx.moveTo(sx, sy);
+        this.ctx.lineTo(originX, sy);
+        this.ctx.stroke();
+        
+        // 3. Draw dashed preview vector arrows for velocity components
+        const vectorScale = 0.8;
+        const vxLength = gp.vx * vectorScale * this.scale;
+        const vyLength = -gp.vy * vectorScale * this.scale; // Canvas Y is downward
+        
+        this.drawDashedArrow(sx, sy, sx + vxLength, sy, 'rgba(16, 185, 129, 0.55)', 1.5, `v_x`);
+        this.drawDashedArrow(sx, sy, sx, sy + vyLength, 'rgba(139, 92, 246, 0.55)', 1.5, `v_y`);
+        this.drawDashedArrow(sx, sy, sx + vxLength, sy + vyLength, 'rgba(244, 63, 94, 0.75)', 2.2, `v (${gp.angle.toFixed(1)}°)`);
+        
+        // 4. Time target text tag
+        this.ctx.fillStyle = '#f43f5e';
+        this.ctx.font = '700 9px "Fira Code", monospace';
+        this.ctx.fillText(`t = ${gp.t.toFixed(2)}s`, sx + 8, sy - 8);
+        
+        this.ctx.restore();
+    }
+
+    // Helper utility to draw clean dashed geometric arrows with solid pointers
+    drawDashedArrow(fromX, fromY, toX, toY, color, thickness = 1.5, label = '') {
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < 5) return;
+        
+        this.ctx.save();
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = thickness;
+        this.ctx.setLineDash([3, 3]);
+        this.ctx.beginPath();
+        this.ctx.moveTo(fromX, fromY);
+        this.ctx.lineTo(toX, toY);
+        this.ctx.stroke();
+        
+        // Draw solid arrowhead
+        const arrowSize = 5 + thickness;
+        const angle = Math.atan2(dy, dx);
+        
+        this.ctx.fillStyle = color;
+        this.ctx.setLineDash([]); // solid arrowhead
+        this.ctx.beginPath();
+        this.ctx.moveTo(toX, toY);
+        this.ctx.lineTo(
+            toX - arrowSize * Math.cos(angle - Math.PI / 6),
+            toY - arrowSize * Math.sin(angle - Math.PI / 6)
+        );
+        this.ctx.lineTo(
+            toX - arrowSize * Math.cos(angle + Math.PI / 6),
+            toY - arrowSize * Math.sin(angle + Math.PI / 6)
+        );
+        this.ctx.closePath();
+        this.ctx.fill();
+        
+        if (label) {
+            this.ctx.fillStyle = color;
+            this.ctx.font = '500 9px "Fira Code", monospace';
+            const lx = toX + 6 * Math.cos(angle);
+            const ly = toY + 6 * Math.sin(angle) + 3;
+            this.ctx.fillText(label, lx - 2, ly);
+        }
+        this.ctx.restore();
     }
 }

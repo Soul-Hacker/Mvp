@@ -30,10 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const metricTime = document.getElementById('metricTime');
 
     // Instantaneous Vector Inspector Elements
+    const metricTimeElapsed = document.getElementById('metricTimeElapsed');
     const metricPos = document.getElementById('metricPos');
     const metricSpeed = document.getElementById('metricSpeed');
+    const metricVecAngle = document.getElementById('metricVecAngle');
     const metricVx = document.getElementById('metricVx');
     const metricVy = document.getElementById('metricVy');
+
+    // Theoretical Time Solver Elements
+    const timeSolverInput = document.getElementById('timeSolverInput');
+    const solverTimeVal = document.getElementById('solverTimeVal');
+    const solverPos = document.getElementById('solverPos');
+    const solverSpeed = document.getElementById('solverSpeed');
+    const solverAngle = document.getElementById('solverAngle');
 
     // Tab buttons for topic navigation
     const tabMechanics = document.getElementById('tab-mechanics');
@@ -86,8 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
             metricTime.textContent = activeProj.timeElapsed.toFixed(2);
 
             // Instantaneous coordinates
+            metricTimeElapsed.textContent = activeProj.timeElapsed.toFixed(2);
             metricPos.textContent = `${activeProj.pos.x.toFixed(2)}, ${activeProj.pos.y.toFixed(2)}`;
             metricSpeed.textContent = activeProj.vel.mag().toFixed(2);
+            
+            const liveAngle = Math.atan2(activeProj.vel.y, activeProj.vel.x) * 180 / Math.PI;
+            metricVecAngle.textContent = liveAngle.toFixed(2);
+            
             metricVx.textContent = activeProj.vel.x.toFixed(2);
             metricVy.textContent = activeProj.vel.y.toFixed(2);
             
@@ -106,13 +120,46 @@ document.addEventListener('DOMContentLoaded', () => {
             const initVx = params.u * Math.cos(theta);
             const initVy = params.u * Math.sin(theta);
 
+            metricTimeElapsed.textContent = "0.00";
             metricPos.textContent = "0.00, 0.00";
             metricSpeed.textContent = params.u.toFixed(2);
+            metricVecAngle.textContent = params.angle.toFixed(2);
             metricVx.textContent = initVx.toFixed(2);
             metricVy.textContent = initVy.toFixed(2);
             
             setTelemetryActiveStyle(false);
         }
+    }
+
+    // Evaluate theoretical kinematics at a given target time t
+    function updateTimeSolver() {
+        const params = getLaunchParameters();
+        const t = parseFloat(timeSolverInput.value);
+        solverTimeVal.textContent = t.toFixed(2);
+
+        const theta = (params.angle * Math.PI) / 180;
+        const u = params.u;
+        const g = params.g;
+
+        // Position coordinates at time t
+        const x = u * Math.cos(theta) * t;
+        const y = Math.max(0, u * Math.sin(theta) * t - 0.5 * g * t * t);
+
+        // Velocity components at time t
+        const vx = u * Math.cos(theta);
+        const vy = u * Math.sin(theta) - g * t;
+        const speed = Math.sqrt(vx * vx + vy * vy);
+        const angle = Math.atan2(vy, vx) * 180 / Math.PI;
+
+        solverPos.textContent = `${x.toFixed(2)}, ${y.toFixed(2)}`;
+        solverSpeed.textContent = speed.toFixed(2);
+        solverAngle.textContent = angle.toFixed(2);
+
+        // Set ghost state in the engine
+        engine.ghostPreview = { x, y, vx, vy, angle, t };
+        
+        // Re-render the canvas with the ghost overlay
+        engine.render();
     }
 
     // Styling utility to indicate real-time stream state
@@ -144,8 +191,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Let the engine adjust pixel scaling dynamically
         engine.autoScale(theoretical.range, theoretical.height);
         
-        // Redraw environment grids according to new scale
-        engine.render();
+        // Sync Time Solver Slider Limits
+        if (timeSolverInput) {
+            const currentVal = parseFloat(timeSolverInput.value);
+            timeSolverInput.max = theoretical.time.toString();
+            timeSolverInput.step = (theoretical.time / 100).toString();
+            
+            if (currentVal > theoretical.time || currentVal === 0) {
+                timeSolverInput.value = "0";
+            }
+            // Update time solver display metrics & ghost preview
+            updateTimeSolver();
+        } else {
+            // Redraw environment grids according to new scale
+            engine.render();
+        }
     }
 
     // Link engine ticks to app's dashboard
@@ -196,6 +256,10 @@ document.addEventListener('DOMContentLoaded', () => {
         handleSliderInput(gravitySlider, gravityVal);
     });
 
+    timeSolverInput.addEventListener('input', () => {
+        updateTimeSolver();
+    });
+
     vectorToggle.addEventListener('change', () => {
         engine.render();
     });
@@ -204,6 +268,13 @@ document.addEventListener('DOMContentLoaded', () => {
     launchBtn.addEventListener('click', () => {
         // Stop current animation if any
         engine.isPlaying = false;
+        
+        // Clear ghost preview during launch
+        engine.ghostPreview = null;
+        if (timeSolverInput) {
+            timeSolverInput.value = "0";
+            solverTimeVal.textContent = "0.00";
+        }
         
         const params = getLaunchParameters();
         
@@ -266,6 +337,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clearBtn.addEventListener('click', () => {
         engine.isPlaying = false;
+        engine.ghostPreview = null;
+        if (timeSolverInput) {
+            timeSolverInput.value = "0";
+            solverTimeVal.textContent = "0.00";
+        }
         engine.clear();
         recalibrateZoom();
         updateTelemetryDashboard(false);
