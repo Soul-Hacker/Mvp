@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Physics - Interactive Class 11-12 Mechanics Sandbox</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="An interactive, high-fidelity 2D projectile motion physics visualizer designed for Class 11-12 students. Tweak velocity, angles, and gravity to see simulated telemetry in real time.">
+    <meta name="keywords" content="Physics Visualizer, Projectile Motion, Mechanics Sandbox, Vector Components, Interactive Physics, Class 11 Physics">
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- KaTeX for Beautiful Math Formula Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation for Topics -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        <path d="M2 12h20"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h2>Visual Physics</h2>
+                    <span>Class 11-12 Laboratory</span>
+                </div>
+            </div>
+            <nav class="nav-tabs">
+                <button class="tab-btn active" data-tab="mechanics" id="tab-mechanics">
+                    <span class="icon">🚀</span>
+                    <span class="btn-label">Mechanics: Projectile Lab</span>
+                </button>
+                <button class="tab-btn disabled" data-tab="electrostatics" id="tab-electrostatics" disabled>
+                    <span class="icon">⚡</span>
+                    <span class="btn-label">Class 12: Electrostatics <span class="badge">Locked</span></span>
+                </button>
+                <button class="tab-btn disabled" data-tab="optics" id="tab-optics" disabled>
+                    <span class="icon">👁️</span>
+                    <span class="btn-label">Class 12: Wave Optics <span class="badge">Locked</span></span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <p>Designed for Interactive STEM Learning</p>
+                <span class="version">v1.0.0</span>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <header class="top-bar">
+                <div class="header-main">
+                    <h1 id="current-topic-title">Kinematics: 2D Projectile Motion</h1>
+                    <p>Observe how independent horizontal and vertical velocities compose standard parabolic trajectories.</p>
+                </div>
+                <div class="header-badges">
+                    <span class="badge-pill mechanics">Mechanics Sandbox</span>
+                </div>
+            </header>
+
+            <div class="content-grid">
+                <!-- Simulation Screen -->
+                <div class="canvas-card">
+                    <div class="canvas-header">
+                        <div class="canvas-title">
+                            <span class="status-indicator active"></span>
+                            <span>Interactive Workspace Canvas</span>
+                        </div>
+                        <div class="canvas-actions">
+                            <span class="scale-label" id="scaleIndicator">Scale: 1m = 10px</span>
+                        </div>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="physicsCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Live Parameter Controls panel -->
+                <div class="controls-card">
+                    <div class="controls-header">
+                        <h3>Simulation Controls</h3>
+                        <p class="subtitle">Modify environment parameters dynamically</p>
+                    </div>
+                    
+                    <div class="control-groups-container">
+                        <div class="control-group">
+                            <div class="control-label-row">
+                                <label for="speedSlider">Initial Velocity ($u$):</label>
+                                <span class="val-display"><span id="speedVal" class="numeric-val">25</span> m/s</span>
+                            </div>
+                            <input type="range" id="speedSlider" min="10" max="50" value="25" step="1">
+                            <div class="slider-ticks">
+                                <span>10 m/s</span>
+                                <span>30 m/s</span>
+                                <span>50 m/s</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="control-label-row">
+                                <label for="angleSlider">Launch Angle ($\theta$):</label>
+                                <span class="val-display"><span id="angleVal" class="numeric-val">45</span>°</span>
+                            </div>
+                            <input type="range" id="angleSlider" min="5" max="85" value="45" step="1">
+                            <div class="slider-ticks">
+                                <span>5°</span>
+                                <span>45°</span>
+                                <span>85°</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="control-label-row">
+                                <label for="gravitySlider">Acceleration ($g$):</label>
+                                <span class="val-display"><span id="gravityVal" class="numeric-val">9.8</span> m/s²</span>
+                            </div>
+                            <input type="range" id="gravitySlider" min="1.6" max="25" value="9.8" step="0.1">
+                            <div class="slider-ticks">
+                                <span>1.6 (Moon)</span>
+                                <span>9.8 (Earth)</span>
+                                <span>25.0 (Heavy)</span>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="vectorToggle" checked>
+                                <span class="checkbox-box"></span>
+                                <span class="checkbox-text">Show Vector Component Arrows</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="button-row">
+                        <button id="launchBtn" class="btn primary">
+                            <span class="btn-icon">🚀</span>
+                            <span>Fire Projectile</span>
+                        </button>
+                    </div>
+                    <div class="button-row secondary-buttons">
+                        <button id="pauseBtn" class="btn secondary" disabled>
+                            <span class="btn-icon" id="pauseIcon">⏸️</span>
+                            <span id="pauseBtnText">Pause</span>
+                        </button>
+                        <button id="clearBtn" class="btn secondary">
+                            <span class="btn-icon">🧹</span>
+                            <span>Clear Canvas</span>
+                        </button>
+                    </div>
+
+                    <!-- Live Physics Metrics Telemetry -->
+                    <div class="telemetry-panel">
+                        <h4>Live Telemetry Readings</h4>
+                        <div class="telemetry-grid">
+                            <div class="metric" id="metric-range-card">
+                                <span class="label">Theoretical Range (R)</span>
+                                <div class="value-wrap">
+                                    <span id="metricRange" class="numeric-val">0.00</span>
+                                    <span class="unit">m</span>
+                                </div>
+                            </div>
+                            <div class="metric" id="metric-height-card">
+                                <span class="label">Max Height (H)</span>
+                                <div class="value-wrap">
+                                    <span id="metricHeight" class="numeric-val">0.00</span>
+                                    <span class="unit">m</span>
+                                </div>
+                            </div>
+                            <div class="metric" id="metric-time-card">
+                                <span class="label">Time of Flight (T)</span>
+                                <div class="value-wrap">
+                                    <span id="metricTime" class="numeric-val">0.00</span>
+                                    <span class="unit">s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instantaneous Vector Inspector -->
+                    <div class="telemetry-panel inspector-panel" id="inspector-panel">
+                        <h4>Instantaneous Vector Inspector</h4>
+                        <div class="telemetry-grid inspector-grid">
+                            <div class="metric" id="metric-pos-card">
+                                <span class="label">Position ($x, y$)</span>
+                                <div class="value-wrap">
+                                    <span id="metricPos" class="numeric-val">0.00, 0.00</span>
+                                    <span class="unit">m</span>
+                                </div>
+                            </div>
+                            <div class="metric" id="metric-speed-card">
+                                <span class="label">Instant Speed ($v$)</span>
+                                <div class="value-wrap">
+                                    <span id="metricSpeed" class="numeric-val">0.00</span>
+                                    <span class="unit">m/s</span>
+                                </div>
+                            </div>
+                            <div class="metric" id="metric-vx-card">
+                                <span class="label">Horizontal ($v_x$)</span>
+                                <div class="value-wrap">
+                                    <span id="metricVx" class="numeric-val">0.00</span>
+                                    <span class="unit">m/s</span>
+                                </div>
+                            </div>
+                            <div class="metric" id="metric-vy-card">
+                                <span class="label">Vertical ($v_y$)</span>
+                                <div class="value-wrap">
+                                    <span id="metricVy" class="numeric-val">0.00</span>
+                                    <span class="unit">m/s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="src/engine.js"></script>
+    <script src="src/projectiles.js"></script>
+    <script src="src/app.js"></script>
+</body>
+</html>
