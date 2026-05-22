@@ -86,8 +86,6 @@ window.PhysicsLab.PhysicsEngine = class PhysicsEngine {
         // Environment settings (controlled by active topic)
         this.showGrid = true;
         this.showGround = true;
-        this.showLauncher = true;
-        this.launcherOrigin = new window.PhysicsLab.Vector2D(0, 0); // physical launcher coords
         
         // Simulation timing loop state
         this.isPlaying = false;
@@ -100,6 +98,7 @@ window.PhysicsLab.PhysicsEngine = class PhysicsEngine {
         // Active topic back-reference & update hook
         this.activeTopic = null;
         this.onUpdateCallback = null;
+        this.onSimulationEndCallback = null;
         
         // High-DPI handling & Resizing
         this.resize();
@@ -185,7 +184,6 @@ window.PhysicsLab.PhysicsEngine = class PhysicsEngine {
         
         if (this.showGrid) this.drawGrid();
         if (this.showGround) this.drawGround();
-        if (this.showLauncher) this.drawLauncherBase();
         
         // Render custom entities
         for (const entity of this.entities) {
@@ -285,29 +283,6 @@ window.PhysicsLab.PhysicsEngine = class PhysicsEngine {
         this.ctx.fillRect(0, screenY, this.logicalWidth, this.logicalHeight - screenY);
     }
 
-    drawLauncherBase() {
-        const sx = this.toScreenX(this.launcherOrigin.x);
-        const sy = this.toScreenY(this.launcherOrigin.y);
-        
-        this.ctx.fillStyle = '#1e293b';
-        this.ctx.strokeStyle = '#475569';
-        this.ctx.lineWidth = 2;
-        
-        this.ctx.beginPath();
-        this.ctx.moveTo(sx - 15, sy);
-        this.ctx.lineTo(sx - 8, sy - 8);
-        this.ctx.lineTo(sx + 8, sy - 8);
-        this.ctx.lineTo(sx + 15, sy);
-        this.ctx.closePath();
-        this.ctx.fill();
-        this.ctx.stroke();
-        
-        this.ctx.fillStyle = '#06b6d4'; 
-        this.ctx.beginPath();
-        this.ctx.arc(sx, sy - 4, 3, 0, Math.PI * 2);
-        this.ctx.fill();
-    }
-
     tick(timestamp) {
         if (!this.isPlaying) return;
         
@@ -335,6 +310,9 @@ window.PhysicsLab.PhysicsEngine = class PhysicsEngine {
         if (allFinished) {
             this.isPlaying = false;
             this.lastTime = 0;
+            if (this.onSimulationEndCallback) {
+                this.onSimulationEndCallback();
+            }
         } else {
             this.animationFrameId = requestAnimationFrame((t) => this.tick(t));
         }

@@ -8,20 +8,21 @@
 
     // 1. Projectile Entity (isolated closure)
     class ProjectileEntity {
-        constructor(u, angleDegrees, g, showVectors) {
+        constructor(u, angleDegrees, g, showVectors, initialHeight = 0) {
             this.u = u;
             this.angle = angleDegrees;
             this.gravity = g;
             this.showVectors = showVectors;
+            this.initialHeight = initialHeight;
             
             const theta = (angleDegrees * Math.PI) / 180;
             
-            this.pos = new Vector2D(0, 0);
+            this.pos = new Vector2D(0, initialHeight);
             this.vel = new Vector2D(u * Math.cos(theta), u * Math.sin(theta));
             
             this.isActive = true;
             this.timeElapsed = 0;
-            this.maxHeight = 0;
+            this.maxHeight = initialHeight;
             
             this.trail = [];
             this.trailCap = 250;
@@ -157,10 +158,52 @@
         }
     }
 
+    // 1.5 Projectile Engine (isolated closure)
+    class ProjectileEngine extends window.PhysicsLab.PhysicsEngine {
+        constructor(canvasId) {
+            super(canvasId);
+            this.showLauncher = true;
+            this.launcherOrigin = new window.PhysicsLab.Vector2D(0, 0);
+        }
+
+        render() {
+            super.render();
+            if (this.showLauncher) {
+                this.drawLauncherBase();
+            }
+        }
+
+        drawLauncherBase() {
+            const sx = this.toScreenX(this.launcherOrigin.x);
+            const sy = this.toScreenY(this.launcherOrigin.y);
+            
+            this.ctx.fillStyle = '#1e293b';
+            this.ctx.strokeStyle = '#475569';
+            this.ctx.lineWidth = 2;
+            
+            this.ctx.beginPath();
+            this.ctx.moveTo(sx - 15, sy);
+            this.ctx.lineTo(sx - 8, sy - 8);
+            this.ctx.lineTo(sx + 8, sy - 8);
+            this.ctx.lineTo(sx + 15, sy);
+            this.ctx.closePath();
+            this.ctx.fill();
+            this.ctx.stroke();
+            
+            this.ctx.fillStyle = '#06b6d4'; 
+            this.ctx.beginPath();
+            this.ctx.arc(sx, sy - 4, 3, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+    }
+
     // 2. Chapter Subclass
     class ProjectileChapter extends window.PhysicsLab.BaseChapter {
         constructor() {
             super('mechanics', 'Kinematics: 2D Projectile Motion', 'Observe how independent horizontal and vertical velocities compose standard parabolic trajectories.', 'Mechanics Sandbox');
+            
+            this.launchBtnText = 'Fire Projectile';
+            this.hasPauseControl = true;
             
             // Declarative UI Sliders
             this.controls = [
@@ -185,6 +228,17 @@
                     step: 1,
                     unit: '°',
                     ticks: ['5°', '45°', '85°']
+                },
+                {
+                    id: 'heightSlider',
+                    type: 'range',
+                    label: 'Initial Height ($h$):',
+                    min: 0,
+                    max: 20,
+                    value: 0,
+                    step: 1,
+                    unit: 'm',
+                    ticks: ['0 m', '10 m', '20 m']
                 },
                 {
                     id: 'gravitySlider',
@@ -229,7 +283,7 @@
             this.solverSubtitle = 'Evaluate exact kinematics at any timestamp';
             this.solverUnit = 's';
             this.solverLabel = 'Target Time ($t$):';
-            this.solverRange = { min: 0, max: 1.0, step: 0.01, value: 0 };
+            this.solverRange = { min: 0, max: 1.0, step: 'any', value: 0 };
             this.solverTelemetry = [
                 { id: 'solverPos', label: 'Position ($x, y$)', unit: 'm', value: '0.00, 0.00', color: 'cyan' },
                 { id: 'solverSpeed', label: 'Velocity ($v$)', unit: 'm/s', value: '0.00', color: 'indigo' },
@@ -239,53 +293,82 @@
             this.ghostState = null;
         }
 
+        createEngine(canvasId) {
+            return new ProjectileEngine(canvasId);
+        }
+
         init(engine) {
             super.init(engine);
             engine.showGrid = true;
             engine.showGround = true;
             engine.showLauncher = true;
-            engine.launcherOrigin.set(0, 0);
+            
+            const height = parseFloat(this.getControlVal('heightSlider') || 0);
+            engine.launcherOrigin.set(0, height);
 
             this.recalibrateZoom(engine);
         }
 
-        predictTrajectory(u, angleDegrees, g) {
+        predictTrajectory(u, angleDegrees, g, h = 0) {
             const theta = (angleDegrees * Math.PI) / 180;
-            const range = (u * u * Math.sin(2 * theta)) / g;
-            const height = (u * u * Math.sin(theta) * Math.sin(theta)) / (2 * g);
-            const time = (2 * u * Math.sin(theta)) / g;
+            const uy = u * Math.sin(theta);
+            const ux = u * Math.cos(theta);
+            
+            const time = (uy + Math.sqrt(uy * uy + 2 * g * h)) / g;
+            const range = ux * time;
+            const height = h + (uy * uy) / (2 * g);
+            
             return { range, height, time };
         }
 
         recalibrateZoom(engine) {
             const speed = parseFloat(this.getControlVal('speedSlider'));
             const angle = parseFloat(this.getControlVal('angleSlider'));
+            const height = parseFloat(this.getControlVal('heightSlider') || 0);
             const gravity = parseFloat(this.getControlVal('gravitySlider'));
             
-            const predicted = this.predictTrajectory(speed, angle, gravity);
+            engine.launcherOrigin.set(0, height);
+
+            const predicted = this.predictTrajectory(speed, angle, gravity, height);
             engine.autoScale(predicted.range, predicted.height);
 
             // Solver range updates
             const solverInput = document.getElementById('timeSolverInput');
             if (solverInput) {
                 solverInput.max = predicted.time.toString();
-                solverInput.step = (predicted.time / 100).toString();
+                solverInput.step = "any"; // Use 'any' for perfectly smooth continuous dragging
                 if (parseFloat(solverInput.value) > predicted.time) {
                     solverInput.value = "0";
+                } else {
+                    solverInput.value = solverInput.value; // Force visual repaint of the slider thumb
+                }
+                const solverTimeVal = document.getElementById('solverTimeVal');
+                if (solverTimeVal) {
+                    solverTimeVal.textContent = parseFloat(solverInput.value).toFixed(2);
                 }
             }
             this.updateSolverState(parseFloat(solverInput ? solverInput.value : 0), engine);
         }
 
         updateSolverState(t, engine) {
-            const speed = parseFloat(this.getControlVal('speedSlider'));
-            const angle = parseFloat(this.getControlVal('angleSlider'));
-            const gravity = parseFloat(this.getControlVal('gravitySlider'));
+            let speed = parseFloat(this.getControlVal('speedSlider'));
+            let angle = parseFloat(this.getControlVal('angleSlider'));
+            let height = parseFloat(this.getControlVal('heightSlider') || 0);
+            let gravity = parseFloat(this.getControlVal('gravitySlider'));
+            
+            // Prioritize simulation entity parameters if active
+            const activeProj = engine.entities[0];
+            if (activeProj) {
+                speed = activeProj.u;
+                angle = activeProj.angle;
+                height = activeProj.initialHeight;
+                gravity = activeProj.gravity;
+            }
             
             const theta = (angle * Math.PI) / 180;
             
             const x = speed * Math.cos(theta) * t;
-            const y = Math.max(0, speed * Math.sin(theta) * t - 0.5 * gravity * t * t);
+            const y = Math.max(0, height + speed * Math.sin(theta) * t - 0.5 * gravity * t * t);
             
             const vx = speed * Math.cos(theta);
             const vy = speed * Math.sin(theta) - gravity * t;
@@ -311,6 +394,7 @@
         }
 
         onControlChange(controlId, value, engine) {
+            engine.clear(); // Clear old trail & projectile when parameters change
             this.recalibrateZoom(engine);
             this.updateDashboard(engine, false);
             engine.render();
@@ -327,10 +411,11 @@
             
             const speed = parseFloat(this.getControlVal('speedSlider'));
             const angle = parseFloat(this.getControlVal('angleSlider'));
+            const height = parseFloat(this.getControlVal('heightSlider') || 0);
             const gravity = parseFloat(this.getControlVal('gravitySlider'));
             const showVectors = this.getControlVal('vectorToggle');
 
-            const projectile = new ProjectileEntity(speed, angle, gravity, showVectors);
+            const projectile = new ProjectileEntity(speed, angle, gravity, showVectors, height);
             engine.addEntity(projectile);
             
             const solverInput = document.getElementById('timeSolverInput');
@@ -374,9 +459,10 @@
             } else {
                 const speed = parseFloat(this.getControlVal('speedSlider'));
                 const angle = parseFloat(this.getControlVal('angleSlider'));
+                const height = parseFloat(this.getControlVal('heightSlider') || 0);
                 const gravity = parseFloat(this.getControlVal('gravitySlider'));
                 
-                const pred = this.predictTrajectory(speed, angle, gravity);
+                const pred = this.predictTrajectory(speed, angle, gravity, height);
                 
                 if (mRange) mRange.textContent = pred.range.toFixed(2);
                 if (mHeight) mHeight.textContent = pred.height.toFixed(2);
@@ -384,7 +470,7 @@
 
                 const theta = (angle * Math.PI) / 180;
                 if (mTimeElapsed) mTimeElapsed.textContent = "0.00";
-                if (mPos) mPos.textContent = "0.00, 0.00";
+                if (mPos) mPos.textContent = `0.00, ${height.toFixed(2)}`;
                 if (mSpeed) mSpeed.textContent = speed.toFixed(2);
                 if (mVecAngle) mVecAngle.textContent = angle.toFixed(2);
                 if (mVx) mVx.textContent = (speed * Math.cos(theta)).toFixed(2);

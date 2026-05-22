@@ -18,6 +18,10 @@ window.PhysicsLab.BaseChapter = class BaseChapter {
         this.subtitle = subtitle;
         this.badge = badge;
         
+        // UI Action configurations
+        this.launchBtnText = 'Launch';
+        this.hasPauseControl = false;
+        
         // Dynamic controls and dashboard templates
         this.controls = []; 
         this.telemetry = [];
@@ -32,11 +36,14 @@ window.PhysicsLab.BaseChapter = class BaseChapter {
         this.solverTelemetry = []; 
     }
 
+    createEngine(canvasId) {
+        return new window.PhysicsLab.PhysicsEngine(canvasId);
+    }
+
     init(engine) {
         // Enforce defaults in engine
         engine.showGrid = true;
         engine.showGround = true;
-        engine.showLauncher = true;
         engine.activeTopic = this;
     }
 

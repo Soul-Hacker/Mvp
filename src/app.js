@@ -33,15 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const pauseBtnText = document.getElementById('pauseBtnText');
     const clearBtn = document.getElementById('clearBtn');
 
-    // 2. Initialize Core Physics Engine
-    let engine;
-    try {
-        engine = new window.PhysicsLab.PhysicsEngine('physicsCanvas');
-    } catch (err) {
-        console.error("Failed to start core physics engine:", err);
-        return;
-    }
-
+    // 2. State Pointers
+    let engine = null;
     let activeTopic = null;
 
     // 3. Dynamic Chapter Loading Orchestration
@@ -52,12 +45,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Clean up previous active topic
-        if (activeTopic) {
-            activeTopic.destroy(engine);
+        // Clean up previous active topic and engine
+        if (engine) {
+            if (activeTopic) {
+                activeTopic.destroy(engine);
+            }
+            engine.destroy();
         }
 
         activeTopic = topic;
+        
+        // Instantiate the custom or base engine for this chapter
+        try {
+            engine = topic.createEngine('physicsCanvas');
+        } catch (err) {
+            console.error("Failed to start chapter physics engine:", err);
+            return;
+        }
         engine.activeTopic = activeTopic;
 
         // Reset play controls state
@@ -81,11 +85,23 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize topic variables
         topic.init(engine);
 
+        // Synchronize engine updates with presentational UI dashboard
+        engine.onUpdateCallback = () => {
+            topic.updateDashboard(engine, true);
+        };
+
+        engine.onSimulationEndCallback = () => {
+            pauseBtn.disabled = true;
+            pauseBtnText.textContent = "Pause";
+            pauseIcon.textContent = "⏸️";
+            removePausedDecorations();
+        };
+
         // Run LaTeX KaTeX parser
         renderMathFormulas();
 
         // Dynamic Main Launch button configurations
-        launchBtn.querySelector('span:not(.btn-icon)').textContent = topic.id === 'electrostatics' ? "Reset Field State" : "Fire Projectile";
+        launchBtn.querySelector('span:not(.btn-icon)').textContent = topic.launchBtnText || "Launch";
 
         // Initial GUI sync
         topic.updateDashboard(engine, false);
@@ -235,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => launchBtn.classList.remove('active'), 200);
 
         // Standard timing control bounds
-        if (activeTopic.id === 'mechanics') {
+        if (activeTopic.hasPauseControl) {
             pauseBtn.disabled = false;
             pauseBtnText.textContent = "Pause";
             pauseIcon.textContent = "⏸️";
@@ -246,8 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     pauseBtn.addEventListener('click', () => {
-        const activeEntity = engine.entities[0];
-        if (!activeEntity || !activeEntity.isActive) return;
+        const hasActive = engine.entities.some(e => e.isActive);
+        if (!hasActive) return;
 
         if (engine.isPlaying) {
             engine.pauseSimulation();
@@ -256,10 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Visual decorations
             engine.canvas.parentElement.classList.add('paused-canvas');
-            const inspectorCards = ['metric-pos-card', 'metric-speed-card', 'metric-vx-card', 'metric-vy-card'];
-            inspectorCards.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('paused-card-glow');
+            const inspectorCards = inspectorDeck.querySelectorAll('.metric');
+            inspectorCards.forEach(card => {
+                card.classList.add('paused-card-glow');
             });
         } else {
             removePausedDecorations();
@@ -291,26 +306,13 @@ document.addEventListener('DOMContentLoaded', () => {
         activeTopic.onSolverChange(parseFloat(timeSolverInput.value), engine);
     });
 
-    // Synchronize engine updates with presentational UI dashboard
-    engine.onUpdateCallback = () => {
-        activeTopic.updateDashboard(engine, true);
-
-        // Projectile landing event catcher
-        const mainEntity = engine.entities[0];
-        if (mainEntity && !mainEntity.isActive) {
-            pauseBtn.disabled = true;
-            pauseBtnText.textContent = "Pause";
-            pauseIcon.textContent = "⏸️";
-            removePausedDecorations();
-        }
-    };
-
     function removePausedDecorations() {
-        engine.canvas.parentElement.classList.remove('paused-canvas');
-        const inspectorCards = ['metric-pos-card', 'metric-speed-card', 'metric-vx-card', 'metric-vy-card'];
-        inspectorCards.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('paused-card-glow');
+        if (engine && engine.canvas) {
+            engine.canvas.parentElement.classList.remove('paused-canvas');
+        }
+        const inspectorCards = inspectorDeck.querySelectorAll('.metric');
+        inspectorCards.forEach(card => {
+            card.classList.remove('paused-card-glow');
         });
     }
 
