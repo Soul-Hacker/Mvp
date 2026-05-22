@@ -147,6 +147,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkbox.addEventListener('change', () => {
                     topic.onControlChange(ctrl.id, checkbox.checked, engine);
                 });
+            } else if (ctrl.type === 'select') {
+                group.className = 'control-group';
+                group.innerHTML = `
+                    <div class="control-label-row">
+                        <label for="${ctrl.id}">${ctrl.label}</label>
+                    </div>
+                    <div class="select-wrapper">
+                        <select id="${ctrl.id}">
+                            ${ctrl.options.map(opt => `<option value="${opt.value}" ${opt.value === ctrl.value ? 'selected' : ''}>${opt.label}</option>`).join('')}
+                        </select>
+                    </div>
+                `;
+                
+                const select = group.querySelector('select');
+                select.addEventListener('change', () => {
+                    topic.onControlChange(ctrl.id, select.value, engine);
+                });
             }
             controlsDeck.appendChild(group);
         });
