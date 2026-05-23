@@ -1,3 +1,8 @@
+---
+name: modern-frontend-standards
+description: Best practices for HTML5/CSS3/JS UI development and DOM/Style unit testing in the Mvp repository.
+---
+
 # Modern Front-End Engineering & Quality Standards
 
 This document establishes the official development, UI/UX design, and quality assurance standards for this repository. It incorporates the latest CSS3, HTML5, and ES6+ features introduced by Google and modern web standards, alongside robust testing methodologies to ensure premium performance, visual excellence, and logic correctness.
