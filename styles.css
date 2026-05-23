@@ -852,11 +852,10 @@ body {
 
 /* Left: Technical Prose Blog Article */
 .lesson-blog-article {
-    flex: 1;
-    min-width: 0;
-    max-width: 780px;
+    width: 380px;
+    flex-shrink: 0;
     overflow-y: auto;
-    padding-right: 12px;
+    padding-right: 16px;
     max-height: calc(100vh - 240px);
 }
 
@@ -964,27 +963,28 @@ body {
 
 /* Physics lab panel (Right embedded block) */
 .lesson-physics-lab-panel {
-    width: 440px;
-    flex-shrink: 0;
+    flex-grow: 1;
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow-y: auto;
+    flex-direction: row;
+    gap: 24px;
+    min-width: 0;
     max-height: calc(100vh - 240px);
-    padding-right: 6px;
 }
 
 .lesson-physics-lab-panel .canvas-card {
+    flex-grow: 1;
+    min-width: 0;
     background: var(--bg-secondary);
     border: 1px solid var(--border-thin);
     border-radius: 12px;
     padding: 14px;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 .lesson-physics-lab-panel .canvas-container {
-    height: 240px;
+    flex-grow: 1;
     border-radius: 8px;
     background: #06070a;
     border: 1px solid rgba(255, 255, 255, 0.02);
@@ -1000,12 +1000,16 @@ body {
 }
 
 .lesson-physics-lab-panel .controls-card {
+    width: 380px;
+    flex-shrink: 0;
     background: var(--bg-secondary);
     border: 1px solid var(--border-thin);
     border-radius: 12px;
     padding: 18px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    height: 100%;
 }
 
 .lesson-physics-lab-panel .controls-header h3 {
@@ -1289,10 +1293,16 @@ input[type="range"]::-webkit-slider-thumb:hover {
     
     .lesson-physics-lab-panel {
         width: 100%;
+        flex-direction: column;
         max-height: none;
     }
     
+    .lesson-physics-lab-panel .controls-card {
+        width: 100%;
+    }
+    
     .lesson-blog-article {
+        width: 100%;
         max-height: none;
         overflow-y: visible;
     }
