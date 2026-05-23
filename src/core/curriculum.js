@@ -442,3 +442,7 @@ function saveUserProgress(progress) {
         console.error("Could not save progress", e);
     }
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { JEE_CURRICULUM, loadUserProgress, saveUserProgress, PROGRESS_STORE_KEY };
+}
