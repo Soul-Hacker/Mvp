@@ -13,6 +13,11 @@ const JEE_CURRICULUM = {
                     {
                         id: "c11-p-m1-ch1",
                         title: "Rectilinear Motion (1D Kinematics)",
+                        learningOutcomes: [
+                            "Differentiate between scalar distance and vector displacement",
+                            "Apply equations of motion under constant gravity symmetries",
+                            "Analyze position, velocity, and acceleration telemetry curves"
+                        ],
                         lessons: [
                             {
                                 id: "c11-p-m1-ch1-l1",
@@ -99,6 +104,11 @@ const JEE_CURRICULUM = {
                     {
                         id: "c11-p-m1-ch2",
                         title: "2D Projectile Motion & Vector Splitting",
+                        learningOutcomes: [
+                            "Resolve 2D velocity vectors into perpendicular component axes",
+                            "Derive formulas for maximum height, range, and flight time",
+                            "Verify trajectory optimization at complementary launch angles"
+                        ],
                         lessons: [
                             {
                                 id: "c11-p-m1-ch2-l1",
@@ -184,6 +194,10 @@ const JEE_CURRICULUM = {
                     {
                         id: "c11-p-m1-ch3",
                         title: "Newton's Laws of Motion & Friction",
+                        learningOutcomes: [
+                            "Draw correct Free Body Diagrams for multi-body constraint systems",
+                            "Resolve contact and friction forces under static and kinetic modes"
+                        ],
                         lessons: [
                             {
                                 id: "c11-p-m1-ch3-l1",
@@ -227,6 +241,10 @@ const JEE_CURRICULUM = {
                     {
                         id: "c11-p-m2-ch1",
                         title: "Work-Energy Theorem & Conservation",
+                        learningOutcomes: [
+                            "Apply the Work-Energy Theorem to conservative mechanical systems",
+                            "Derive stable and unstable equilibrium thresholds in potential wells"
+                        ],
                         lessons: [
                             {
                                 id: "c11-p-m2-ch1-l1",
@@ -259,6 +277,9 @@ const JEE_CURRICULUM = {
                     {
                         id: "c11-c-p1-ch1",
                         title: "The Bohr Model & Quantum Mechanics",
+                        learningOutcomes: [
+                            "Calculate Bohr orbit radii and energy transitions for hydrogen-like species"
+                        ],
                         lessons: [
                             {
                                 id: "c11-c-p1-ch1-l1",
@@ -291,6 +312,9 @@ const JEE_CURRICULUM = {
                     {
                         id: "c11-m-c1-ch1",
                         title: "Limits & Indeterminate Forms",
+                        learningOutcomes: [
+                            "Evaluate indeterminate limit forms using algebraic expansion and Taylor series"
+                        ],
                         lessons: [
                             {
                                 id: "c11-m-c1-ch1-l1",
@@ -327,6 +351,9 @@ const JEE_CURRICULUM = {
                     {
                         id: "c12-p-e-ch1",
                         title: "Electric Charges & Coulomb's Law",
+                        learningOutcomes: [
+                            "Formulate vector Coulomb forces and verify the principle of superposition"
+                        ],
                         lessons: [
                             {
                                 id: "c12-p-e-ch1-l1",
@@ -358,6 +385,9 @@ const JEE_CURRICULUM = {
                     {
                         id: "c12-c-o1-ch1",
                         title: "Aldehydes, Ketones & Condensations",
+                        learningOutcomes: [
+                            "Outline the step-by-step mechanism of the Aldol condensation reaction"
+                        ],
                         lessons: [
                             {
                                 id: "c12-c-o1-ch1-l1",
@@ -394,6 +424,9 @@ const JEE_CURRICULUM = {
                     {
                         id: "c12-m-c2-ch1",
                         title: "Definite Integrals & Properties",
+                        learningOutcomes: [
+                            "Solve complex integrals quickly using symmetric properties and King's Rule"
+                        ],
                         lessons: [
                             {
                                 id: "c12-m-c2-ch1-l1",

@@ -138,26 +138,39 @@
                 </div>
             </section>
 
-            <!-- VIEW 2: The Chapter Tree Roadmap View -->
+            <!-- VIEW 2: The Chapter View with Lessons & Checklist Outcomes -->
             <section id="view-tree" class="app-view">
                 <header class="view-header">
                     <button class="back-link-btn" id="btn-tree-back">
-                        <span class="arrow">←</span> Back to Class <span id="tree-class-num">11</span> Modules
+                        <span class="arrow">&lsaquo;</span> Back to Course
                     </button>
-                    <div class="header-main" style="margin-top: 12px;">
-                        <div class="topic-meta-row">
-                            <span class="badge-pill" id="tree-topic-badge">Mechanics</span>
-                            <span class="progress-ratio mono-font" id="tree-progress-ratio">0/0 Mastered</span>
+                    <div class="chapter-header-wrap" style="margin-top: 14px;">
+                        <span class="chapter-meta-index" id="tree-chapter-index">Chapter 01</span>
+                        <h1 id="tree-chapter-title">Rectilinear Motion</h1>
+                        <div class="chapter-progress-row">
+                            <div class="chapter-progress-bar-container">
+                                <div class="chapter-progress-bar-fill" id="tree-chapter-progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-ratio mono-font" id="tree-chapter-progress-text">0/3 completed</span>
                         </div>
-                        <h1 id="tree-topic-title">Calculus — Course Roadmap</h1>
-                        <p id="tree-topic-desc">Explore lessons, master conceptual parameters, and pass milestones in order.</p>
                     </div>
                 </header>
 
-                <div class="tree-layout-wrapper">
-                    <!-- Timeline Curve Visualizer -->
-                    <div class="roadmap-tree-container" id="roadmap-tree-nodes">
-                        <!-- Injected Dynamically as Accordions along a vertical spine -->
+                <div class="chapter-workspace">
+                    <!-- Left Column: Lessons list -->
+                    <div class="chapter-lessons-col">
+                        <h4 class="col-section-title">Lessons</h4>
+                        <div class="lessons-list" id="chapter-lessons-list">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Learning outcomes checklist -->
+                    <div class="chapter-checklist-col">
+                        <h4 class="col-section-title">Chapter Checklist</h4>
+                        <div class="checklist-card" id="chapter-checklist-card">
+                            <!-- Injected dynamically -->
+                        </div>
                     </div>
                 </div>
             </section>

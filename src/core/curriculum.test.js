@@ -54,4 +54,23 @@ describe('JEE Curriculum & User Progress Storage Suite', () => {
         const progress = loadUserProgress();
         expect(progress).toEqual({ completedLessons: {} });
     });
+
+    test('every chapter in the curriculum must have a valid non-empty learningOutcomes array', () => {
+        ['class11', 'class12'].forEach(cls => {
+            ['physics', 'chemistry', 'mathematics'].forEach(subj => {
+                const topics = JEE_CURRICULUM[cls][subj] || [];
+                topics.forEach(topic => {
+                    topic.chapters.forEach(chapter => {
+                        expect(chapter).toHaveProperty('learningOutcomes');
+                        expect(Array.isArray(chapter.learningOutcomes)).toBe(true);
+                        expect(chapter.learningOutcomes.length).toBeGreaterThan(0);
+                        chapter.learningOutcomes.forEach(outcome => {
+                            expect(typeof outcome).toBe('string');
+                            expect(outcome.trim().length).toBeGreaterThan(0);
+                        });
+                    });
+                });
+            });
+        });
+    });
 });

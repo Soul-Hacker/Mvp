@@ -429,93 +429,165 @@ body {
 }
 
 .topics-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
 }
 
-/* Premium Minimalist Topic Cards */
-.topic-card {
+/* Premium Chapter Cards (Screenshot 2 Reference) */
+.chapter-card {
     background: var(--bg-secondary);
     border: 1px solid var(--border-thin);
-    border-radius: 8px;
-    padding: 16px;
+    border-radius: 16px;
+    padding: 24px;
     cursor: pointer;
     transition: var(--transition-smooth);
     display: flex;
     flex-direction: column;
-    gap: 10px;
-}
-
-.topic-card:hover {
-    border-color: var(--border-active);
-    background: rgba(99, 102, 241, 0.02);
-    transform: translateY(-2px);
+    gap: 16px;
+    position: relative;
     box-shadow: var(--card-shadow);
 }
 
-.topic-card-header {
+.chapter-card:hover {
+    border-color: var(--accent-indigo);
+    background: rgba(99, 102, 241, 0.02);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+.chapter-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.topic-badge {
-    font-family: 'Fira Code', monospace;
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--accent-indigo);
-    background: rgba(99, 102, 241, 0.08);
-    padding: 1px 6px;
-    border-radius: 4px;
+.chapter-card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.topic-metrics {
+.chapter-card-header-left .icon-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--accent-emerald);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    filter: drop-shadow(0 0 6px var(--accent-emerald-glow));
+}
+
+.chapter-card-header-left .index-label {
     font-family: 'Fira Code', monospace;
-    font-size: 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 600;
     color: var(--text-dim);
 }
 
-.topic-card h3 {
+.chapter-card-header-right {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    transition: var(--transition-smooth);
+}
+
+.chapter-card:hover .chapter-card-header-right {
+    color: var(--text-main);
+    transform: translateX(3px);
+}
+
+.chapter-card h3 {
     font-family: 'Outfit', sans-serif;
-    font-size: 0.98rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--text-main);
     line-height: 1.25;
+    margin-top: -4px;
 }
 
-.topic-card p {
-    font-size: 0.78rem;
+.chapter-card-progress-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.72rem;
     color: var(--text-muted);
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+}
+
+.chapter-card-progress-wrap .pct-text {
+    font-weight: 600;
+    color: var(--accent-emerald);
+}
+
+.chapter-card-progress-bar {
+    height: 4px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 2px;
     overflow: hidden;
 }
 
-/* Progress indicator on topic cards */
-.topic-card-progress {
-    height: 2px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 1px;
-    overflow: hidden;
-    margin-top: 4px;
-}
-
-.topic-card-progress-fill {
+.chapter-card-progress-fill {
     height: 100%;
-    background: var(--accent-indigo);
-    width: 0%;
-    transition: width 0.3s ease;
+    background: var(--accent-emerald);
+    box-shadow: 0 0 6px var(--accent-emerald-glow);
+    border-radius: 2px;
+    transition: width 0.4s ease;
 }
 
-/* VIEW 2: CHAPTER TREE VIEW */
+.chapter-card-lessons-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    padding-top: 14px;
+    margin-top: 2px;
+}
+
+.chapter-card-lesson-bullet {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.chapter-card-lesson-bullet .bullet-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid var(--border-medium);
+    flex-shrink: 0;
+    transition: var(--transition-smooth);
+}
+
+.chapter-card-lesson-bullet.mastered .bullet-circle {
+    background: var(--accent-emerald);
+    border-color: var(--accent-emerald);
+    box-shadow: 0 0 4px var(--accent-emerald-glow);
+}
+
+.chapter-card-lesson-bullet.mastered .bullet-text {
+    color: var(--text-dim);
+    text-decoration: line-through;
+}
+
+.chapter-card-more-lessons {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    margin-left: 22px;
+}
+
+/* VIEW 2: CHAPTER WORKSPACE VIEWER */
 .back-link-btn {
     background: transparent;
     border: none;
     color: var(--text-muted);
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -528,211 +600,203 @@ body {
 
 .back-link-btn:hover {
     color: var(--text-main);
-    transform: translateX(-2px);
+    transform: translateX(-3px);
 }
 
-.topic-meta-row {
+.chapter-header-wrap {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.badge-pill {
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.68rem;
+.chapter-meta-index {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.72rem;
     font-weight: 600;
+    color: var(--text-dim);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border: 1px solid var(--border-active);
-    color: var(--text-main);
-    background: rgba(99, 102, 241, 0.06);
+}
+
+.chapter-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.chapter-progress-bar-container {
+    height: 6px;
+    flex-grow: 1;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.chapter-progress-bar-fill {
+    height: 100%;
+    background: var(--accent-emerald);
+    box-shadow: 0 0 8px var(--accent-emerald-glow);
+    border-radius: 3px;
+    transition: width 0.4s ease;
 }
 
 .progress-ratio {
-    font-size: 0.72rem;
-    color: var(--accent-indigo);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
     font-weight: 600;
+    flex-shrink: 0;
 }
 
-/* Roadmap Tree list layout */
-.tree-layout-wrapper {
-    position: relative;
-    max-width: 780px;
-    margin: 12px 0 24px 0;
-    padding-left: 28px;
+/* VIEW 2: CHAPTER DETAIL WORKSPACE */
+.chapter-workspace {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    margin-top: 24px;
+    align-items: start;
 }
 
-.tree-layout-wrapper::before {
-    content: "";
-    position: absolute;
-    left: 8px;
-    top: 10px;
-    bottom: 20px;
-    width: 1px;
-    background: var(--border-medium);
+@media (max-width: 1024px) {
+    .chapter-workspace {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
 }
 
-.roadmap-tree-container {
+.col-section-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+}
+
+.lessons-list {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 10px;
 }
 
-/* Chapter Accordion Card */
-.chapter-accordion {
-    position: relative;
+/* Premium Lesson Buttons */
+.lesson-row-btn {
     background: var(--bg-secondary);
     border: 1px solid var(--border-thin);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: var(--transition-smooth);
-}
-
-/* Bullet node on vertical timeline */
-.chapter-accordion::before {
-    content: "";
-    position: absolute;
-    left: -24px;
-    top: 20px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--bg-primary);
-    border: 2px solid var(--text-dim);
-    z-index: 2;
-    transition: var(--transition-smooth);
-}
-
-.chapter-accordion.completed::before {
-    background: var(--accent-emerald);
-    border-color: var(--accent-emerald);
-    box-shadow: 0 0 6px var(--accent-emerald-glow);
-}
-
-.chapter-accordion.in-progress::before {
-    background: var(--accent-indigo);
-    border-color: var(--accent-indigo);
-    box-shadow: 0 0 6px var(--accent-indigo-glow);
-}
-
-.chapter-header {
+    border-radius: 12px;
     padding: 16px 20px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     cursor: pointer;
-    user-select: none;
-    background: var(--bg-secondary);
     transition: var(--transition-smooth);
-}
-
-.chapter-header:hover {
-    background: var(--bg-hover);
-}
-
-.chapter-header-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.chapter-index {
-    font-family: 'Fira Code', monospace;
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: var(--text-dim);
-}
-
-.chapter-header-main h3 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.98rem;
-    font-weight: 700;
+    width: 100%;
+    text-align: left;
     color: var(--text-main);
+    box-shadow: var(--card-shadow);
 }
 
-.chapter-header-meta {
+.lesson-row-btn:hover {
+    border-color: rgba(99, 102, 241, 0.35);
+    background: var(--bg-hover);
+    transform: translateX(3px);
+}
+
+.lesson-row-btn.mastered {
+    border-color: rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.01);
+}
+
+.lesson-row-btn.mastered:hover {
+    border-color: var(--accent-emerald);
+}
+
+.lesson-row-btn-left {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.chapter-stats-badge {
-    font-family: 'Fira Code', monospace;
-    font-size: 0.68rem;
-    color: var(--text-muted);
-}
-
-.accordion-arrow {
-    font-size: 0.62rem;
-    color: var(--text-dim);
-    transition: transform 0.25s ease;
-}
-
-.chapter-accordion.open .accordion-arrow {
-    transform: rotate(180deg);
-}
-
-/* Nested Lesson sub list container */
-.chapter-lessons-list {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(0, 0, 0, 0.08);
-    border-top: 1px solid transparent;
-}
-
-.chapter-accordion.open .chapter-lessons-list {
-    max-height: 500px;
-    border-top-color: var(--border-thin);
-}
-
-/* Lesson Items */
-.lesson-row-item {
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border-thin);
-    transition: var(--transition-smooth);
-}
-
-.lesson-row-item:last-child {
-    border-bottom: none;
-}
-
-.lesson-row-item:hover {
-    background: var(--bg-hover);
-}
-
-.lesson-row-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.lesson-icon-circle {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border-thin);
+/* Custom Row-Level Mastery Checkbox */
+.lesson-checkbox {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border-medium);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.72rem;
+    transition: var(--transition-smooth);
+    color: #0a0b0e;
+    flex-shrink: 0;
 }
 
-.lesson-row-left span.lesson-title-label {
-    font-size: 0.82rem;
+.lesson-checkbox:hover {
+    border-color: var(--accent-emerald);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.lesson-checkbox.checked {
+    background: var(--accent-emerald);
+    border-color: var(--accent-emerald);
+    box-shadow: 0 0 6px var(--accent-emerald-glow);
+}
+
+.lesson-checkbox svg {
+    width: 12px;
+    height: 12px;
+    stroke: #0a0b0e;
+    stroke-width: 4px;
+    fill: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.lesson-checkbox.checked svg {
+    opacity: 1;
+}
+
+.lesson-row-btn .lesson-index-num {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    min-width: 20px;
+}
+
+.lesson-row-btn .lesson-icon-box {
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+}
+
+.lesson-row-btn .lesson-title-text {
+    font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-muted);
     transition: var(--transition-smooth);
 }
 
-.lesson-row-item:hover span.lesson-title-label {
+.lesson-row-btn:hover .lesson-title-text {
     color: var(--text-main);
+}
+
+.lesson-row-btn.mastered .lesson-title-text {
+    color: var(--text-dim);
+    text-decoration: line-through;
+}
+
+.lesson-row-btn-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 .lesson-type-badge {
@@ -742,40 +806,105 @@ body {
     text-transform: uppercase;
     padding: 1px 5px;
     border-radius: 3px;
+    letter-spacing: 0.02em;
 }
 
 .lesson-type-badge.theory { background: rgba(99, 102, 241, 0.08); color: var(--accent-indigo); }
 .lesson-type-badge.derivation { background: rgba(6, 182, 212, 0.08); color: var(--accent-cyan); }
 .lesson-type-badge.lab { background: rgba(245, 158, 11, 0.08); color: var(--accent-amber); }
 
-/* Circle Check Indicators */
-.lesson-check-status {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 1px solid var(--border-medium);
+.lesson-row-btn .chevron {
+    font-size: 1rem;
+    color: var(--text-dim);
+    transition: var(--transition-smooth);
+    margin-top: -2px;
+}
+
+.lesson-row-btn:hover .chevron {
+    color: var(--text-main);
+    transform: translateX(2px);
+}
+
+/* Right Column: Checklist Card */
+.checklist-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-thin);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checklist-item input[type="checkbox"] {
+    display: none;
+}
+
+.checklist-item .custom-checkbox {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border-medium);
+    margin-top: 1px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     transition: var(--transition-smooth);
+    color: #0a0b0e;
 }
 
-.lesson-row-item.mastered .lesson-check-status {
+.checklist-item:hover .custom-checkbox {
+    border-color: var(--accent-emerald);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.checklist-item input:checked + .custom-checkbox {
     background: var(--accent-emerald);
     border-color: var(--accent-emerald);
     box-shadow: 0 0 6px var(--accent-emerald-glow);
 }
 
-.lesson-check-status::after {
-    content: "✓";
-    font-size: 0.55rem;
-    color: #000;
-    font-weight: 800;
-    display: none;
+.checklist-item .custom-checkbox svg {
+    width: 12px;
+    height: 12px;
+    stroke: #0a0b0e;
+    stroke-width: 4px;
+    fill: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
-.lesson-row-item.mastered .lesson-check-status::after {
-    display: block;
+.checklist-item input:checked + .custom-checkbox svg {
+    opacity: 1;
+}
+
+.checklist-item .checklist-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+    transition: var(--transition-smooth);
+}
+
+.checklist-item input:checked ~ .checklist-text {
+    color: var(--text-dim);
+    text-decoration: line-through;
+}
+
+.no-outcomes {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-style: italic;
+    text-align: center;
 }
 
 

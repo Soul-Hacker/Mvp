@@ -31,13 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const gridMathematics = document.getElementById('grid-mathematics');
 
     // Tree View Elements
-    const treeClassNum = document.getElementById('tree-class-num');
-    const treeTopicBadge = document.getElementById('tree-topic-badge');
-    const treeProgressRatio = document.getElementById('tree-progress-ratio');
-    const treeTopicTitle = document.getElementById('tree-topic-title');
-    const treeTopicDesc = document.getElementById('tree-topic-desc');
-    const roadmapTreeNodes = document.getElementById('roadmap-tree-nodes');
     const btnTreeBack = document.getElementById('btn-tree-back');
+    const treeChapterIndex = document.getElementById('tree-chapter-index');
+    const treeChapterTitle = document.getElementById('tree-chapter-title');
+    const treeChapterProgressFill = document.getElementById('tree-chapter-progress-fill');
+    const treeChapterProgressText = document.getElementById('tree-chapter-progress-text');
+    const chapterLessonsList = document.getElementById('chapter-lessons-list');
+    const chapterChecklistCard = document.getElementById('chapter-checklist-card');
 
     // Lesson View Elements
     const btnLessonBack = document.getElementById('btn-lesson-back');
@@ -111,40 +111,52 @@ document.addEventListener('DOMContentLoaded', () => {
         overallProgressText.textContent = `${pct}%`;
         overallProgressBar.style.width = `${pct}%`;
 
-        // Update Topic progress bar on homepage if rendered
-        document.querySelectorAll('.topic-card').forEach(card => {
-            const topicId = card.getAttribute('data-topic-id');
-            const topicObj = findTopicById(topicId);
-            if (topicObj) {
-                const topicPct = getTopicProgressPercent(topicObj);
-                const fill = card.querySelector('.topic-card-progress-fill');
-                if (fill) fill.style.width = `${topicPct}%`;
+        // Update Chapter progress bar on homepage if rendered
+        document.querySelectorAll('.chapter-card').forEach(card => {
+            const chapterId = card.getAttribute('data-chapter-id');
+            const chapterObj = findChapterById(chapterId);
+            if (chapterObj) {
+                const chTotal = chapterObj.lessons.length;
+                const chCompleted = chapterObj.lessons.filter(l => userProgress.completedLessons[l.id]).length;
+                const progressPct = chTotal > 0 ? Math.round((chCompleted / chTotal) * 100) : 0;
+                
+                const fill = card.querySelector('.chapter-card-progress-fill');
+                if (fill) fill.style.width = `${progressPct}%`;
+                
+                const ratioText = card.querySelector('.chapter-card-progress-wrap span:first-child');
+                if (ratioText) ratioText.textContent = `${chCompleted}/${chTotal} lessons completed`;
+                
+                const pctText = card.querySelector('.pct-text');
+                if (pctText) pctText.textContent = `${progressPct}%`;
+
+                // Also update lesson bullets checkmarks in the homepage cards preview list!
+                card.querySelectorAll('.chapter-card-lesson-bullet').forEach((bullet, bIdx) => {
+                    const linkedLesson = chapterObj.lessons[bIdx];
+                    if (linkedLesson) {
+                        const isLCompleted = !!userProgress.completedLessons[linkedLesson.id];
+                        if (isLCompleted) {
+                            bullet.classList.add('mastered');
+                        } else {
+                            bullet.classList.remove('mastered');
+                        }
+                    }
+                });
             }
         });
     }
 
-    // Helper: Find topic by ID anywhere in the curriculum
-    function findTopicById(topicId) {
+    // Helper: Find chapter by ID anywhere in the curriculum
+    function findChapterById(chapterId) {
         for (let cls of ['class11', 'class12']) {
             for (let subj of ['physics', 'chemistry', 'mathematics']) {
-                const topic = (JEE_CURRICULUM[cls][subj] || []).find(t => t.id === topicId);
-                if (topic) return topic;
+                const topics = JEE_CURRICULUM[cls][subj] || [];
+                for (let topic of topics) {
+                    const chapter = topic.chapters.find(ch => ch.id === chapterId);
+                    if (chapter) return chapter;
+                }
             }
         }
         return null;
-    }
-
-    // Helper: Get completed percentage of a topic
-    function getTopicProgressPercent(topic) {
-        let total = 0;
-        let completed = 0;
-        topic.chapters.forEach(ch => {
-            ch.lessons.forEach(l => {
-                total++;
-                if (userProgress.completedLessons[l.id]) completed++;
-            });
-        });
-        return total > 0 ? Math.round((completed / total) * 100) : 0;
     }
 
     // 3. Dynamic SPA View Manager
@@ -199,43 +211,87 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const classCurriculum = JEE_CURRICULUM[currentClass];
 
-        // Compile Physics Topics
+        // Compile Physics Chapters
+        let phyIdx = 0;
         (classCurriculum.physics || []).forEach(topic => {
-            gridPhysics.appendChild(createTopicCard(topic));
+            topic.chapters.forEach(ch => {
+                gridPhysics.appendChild(createChapterCard(ch, phyIdx, topic));
+                phyIdx++;
+            });
         });
 
-        // Compile Chemistry Topics
+        // Compile Chemistry Chapters
+        let chemIdx = 0;
         (classCurriculum.chemistry || []).forEach(topic => {
-            gridChemistry.appendChild(createTopicCard(topic));
+            topic.chapters.forEach(ch => {
+                gridChemistry.appendChild(createChapterCard(ch, chemIdx, topic));
+                chemIdx++;
+            });
         });
 
-        // Compile Mathematics Topics
+        // Compile Mathematics Chapters
+        let mathIdx = 0;
         (classCurriculum.mathematics || []).forEach(topic => {
-            gridMathematics.appendChild(createTopicCard(topic));
+            topic.chapters.forEach(ch => {
+                gridMathematics.appendChild(createChapterCard(ch, mathIdx, topic));
+                mathIdx++;
+            });
         });
     }
 
-    function createTopicCard(topic) {
+    function createChapterCard(ch, chIdx, topic) {
         const card = document.createElement('div');
-        card.className = 'topic-card';
-        card.setAttribute('data-topic-id', topic.id);
+        card.className = 'chapter-card';
+        card.setAttribute('data-chapter-id', ch.id);
         
-        const completedPct = getTopicProgressPercent(topic);
+        const chTotal = ch.lessons.length;
+        const chCompleted = ch.lessons.filter(l => userProgress.completedLessons[l.id]).length;
+        const pct = chTotal > 0 ? Math.round((chCompleted / chTotal) * 100) : 0;
+
+        // Render first 3 lessons preview
+        let previewHtml = '';
+        const previewLessons = ch.lessons.slice(0, 3);
+        previewLessons.forEach(l => {
+            const isLCompleted = !!userProgress.completedLessons[l.id];
+            previewHtml += `
+                <div class="chapter-card-lesson-bullet ${isLCompleted ? 'mastered' : ''}">
+                    <span class="bullet-circle"></span>
+                    <span class="bullet-text">${l.title}</span>
+                </div>
+            `;
+        });
+
+        // Overflow count
+        const overflow = ch.lessons.length - 3;
+        const overflowHtml = overflow > 0 ? `<span class="chapter-card-more-lessons">+${overflow} more lessons</span>` : '';
 
         card.innerHTML = `
-            <div class="topic-card-header">
-                <span class="topic-badge">${topic.badge}</span>
-                <span class="topic-metrics">${topic.chapterCount} ch • ${topic.lessonCount} lessons</span>
+            <div class="chapter-card-header">
+                <div class="chapter-card-header-left">
+                    <span class="icon-circle">📖</span>
+                    <span class="index-label">Chapter ${String(chIdx + 1).padStart(2, '0')}</span>
+                </div>
+                <div class="chapter-card-header-right">
+                    <span>&rsaquo;</span>
+                </div>
             </div>
-            <h3>${topic.title}</h3>
-            <p>${topic.description}</p>
-            <div class="topic-card-progress">
-                <div class="topic-card-progress-fill" style="width: ${completedPct}%"></div>
+            <h3>${ch.title}</h3>
+            <div class="chapter-card-progress-wrap">
+                <span>${chCompleted}/${chTotal} lessons completed</span>
+                <span class="pct-text">${pct}%</span>
+            </div>
+            <div class="chapter-card-progress-bar">
+                <div class="chapter-card-progress-fill" style="width: ${pct}%"></div>
+            </div>
+            <div class="chapter-card-lessons-preview">
+                ${previewHtml}
+                ${overflowHtml}
             </div>
         `;
 
         card.addEventListener('click', () => {
             activeTopic = topic;
+            activeChapter = ch;
             renderTreeRoadmap();
             showView('view-tree');
         });
@@ -245,109 +301,111 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. View 2: The Chapter Tree Roadmap Renderer
     function renderTreeRoadmap() {
-        if (!activeTopic) return;
+        if (!activeChapter) return;
 
-        treeClassNum.textContent = currentClass === "class11" ? "11" : "12";
-        treeTopicTitle.textContent = activeTopic.title;
-        treeTopicDesc.textContent = activeTopic.description;
-        treeTopicBadge.textContent = activeTopic.badge;
+        // Find the index of the chapter in the topic
+        const chIdx = activeTopic.chapters.findIndex(c => c.id === activeChapter.id);
+        treeChapterIndex.textContent = `Chapter ${String(chIdx + 1).padStart(2, '0')}`;
+        treeChapterTitle.textContent = activeChapter.title;
 
         // Calculate roadmap ratio
-        let total = 0;
-        let completed = 0;
-        activeTopic.chapters.forEach(ch => {
-            ch.lessons.forEach(l => {
-                total++;
-                if (userProgress.completedLessons[l.id]) completed++;
-            });
-        });
-        treeProgressRatio.textContent = `${completed}/${total} Mastered (${total > 0 ? Math.round((completed / total) * 100) : 0}%)`;
+        const chTotal = activeChapter.lessons.length;
+        const chCompleted = activeChapter.lessons.filter(l => userProgress.completedLessons[l.id]).length;
+        const pct = chTotal > 0 ? Math.round((chCompleted / chTotal) * 100) : 0;
+        
+        treeChapterProgressFill.style.width = `${pct}%`;
+        treeChapterProgressText.textContent = `${chCompleted}/${chTotal} completed`;
 
-        roadmapTreeNodes.innerHTML = '';
-
-        // Generate chapters list vertically
-        activeTopic.chapters.forEach((ch, chIdx) => {
-            const accordion = document.createElement('div');
-            accordion.className = 'chapter-accordion';
-
-            // Calculate chapter completion percentage
-            let chTotal = ch.lessons.length;
-            let chCompleted = ch.lessons.filter(l => userProgress.completedLessons[l.id]).length;
-            const isCompleted = chCompleted === chTotal;
-
-            if (isCompleted) {
-                accordion.classList.add('completed');
-            } else if (chCompleted > 0) {
-                accordion.classList.add('in-progress');
+        // Render lessons list
+        chapterLessonsList.innerHTML = '';
+        activeChapter.lessons.forEach((lesson, lIdx) => {
+            const btn = document.createElement('button');
+            btn.className = 'lesson-row-btn';
+            const isLCompleted = !!userProgress.completedLessons[lesson.id];
+            if (isLCompleted) {
+                btn.classList.add('mastered');
             }
 
-            accordion.innerHTML = `
-                <div class="chapter-header">
-                    <div class="chapter-header-main">
-                        <span class="chapter-index">Chapter ${String(chIdx + 1).padStart(2, '0')}</span>
-                        <h3>${ch.title}</h3>
+            let typeIcon = "📖";
+            if (lesson.type === 'derivation') typeIcon = "📐";
+            else if (lesson.type === 'lab') typeIcon = "🧪";
+
+            btn.innerHTML = `
+                <div class="lesson-row-btn-left">
+                    <div class="lesson-checkbox ${isLCompleted ? 'checked' : ''}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
                     </div>
-                    <div class="chapter-header-meta">
-                        <span class="chapter-stats-badge">${chCompleted}/${chTotal} mastered</span>
-                        <span class="accordion-arrow">▼</span>
-                    </div>
+                    <span class="lesson-index-num">${String(lIdx + 1).padStart(2, '0')}</span>
+                    <span class="lesson-icon-box">${typeIcon}</span>
+                    <span class="lesson-title-text">${lesson.title}</span>
                 </div>
-                <div class="chapter-lessons-list">
-                    <!-- Lesson row items dynamically injected -->
+                <div class="lesson-row-btn-right">
+                    <span class="lesson-type-badge ${lesson.type}">${lesson.type}</span>
+                    <span class="chevron">&rsaquo;</span>
                 </div>
             `;
 
-            const listContainer = accordion.querySelector('.chapter-lessons-list');
-            
-            ch.lessons.forEach((lesson, lIdx) => {
-                const row = document.createElement('div');
-                row.className = 'lesson-row-item';
-                if (userProgress.completedLessons[lesson.id]) {
-                    row.classList.add('mastered');
-                }
+            // Checkbox click event toggles mastery status
+            const checkBtn = btn.querySelector('.lesson-checkbox');
+            checkBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const nextState = !userProgress.completedLessons[lesson.id];
+                userProgress.completedLessons[lesson.id] = nextState;
+                saveUserProgress(userProgress);
+                
+                // Repaint
+                updateProgressStats();
+                renderTreeRoadmap();
+            });
 
-                // Render specific visual icons per lesson content types
-                let typeIcon = "📖";
-                if (lesson.type === 'derivation') typeIcon = "📐";
-                else if (lesson.type === 'lab') typeIcon = "🧪";
+            btn.addEventListener('click', () => {
+                activeLesson = lesson;
+                renderLessonView();
+                showView('view-lesson');
+            });
 
-                row.innerHTML = `
-                    <div class="lesson-row-left">
-                        <div class="lesson-icon-circle">${typeIcon}</div>
-                        <span class="lesson-title-label">${lesson.title}</span>
-                        <span class="lesson-type-badge ${lesson.type}">${lesson.type}</span>
-                    </div>
-                    <div class="lesson-check-status"></div>
+            chapterLessonsList.appendChild(btn);
+        });
+
+        // Render checklist outcomes
+        chapterChecklistCard.innerHTML = '';
+        if (activeChapter.learningOutcomes && activeChapter.learningOutcomes.length > 0) {
+            activeChapter.learningOutcomes.forEach((outcome, oIdx) => {
+                const item = document.createElement('label');
+                item.className = 'checklist-item';
+                
+                const linkedLesson = activeChapter.lessons[oIdx];
+                const isChecked = linkedLesson ? !!userProgress.completedLessons[linkedLesson.id] : false;
+
+                item.innerHTML = `
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} ${!linkedLesson ? 'disabled' : ''}>
+                    <span class="custom-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </span>
+                    <span class="checklist-text">${outcome}</span>
                 `;
 
-                row.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Avoid triggering accordion toggling
-                    activeChapter = ch;
-                    activeLesson = lesson;
-                    renderLessonView();
-                    showView('view-lesson');
-                });
-
-                listContainer.appendChild(row);
-            });
-
-            // Bind chapter accordion drawer trigger
-            accordion.querySelector('.chapter-header').addEventListener('click', () => {
-                const isOpen = accordion.classList.contains('open');
-                // Close all other chapters for focused visual roadmap sequence
-                document.querySelectorAll('.chapter-accordion').forEach(acc => acc.classList.remove('open'));
-                if (!isOpen) {
-                    accordion.classList.add('open');
+                if (linkedLesson) {
+                    const checkbox = item.querySelector('input');
+                    checkbox.addEventListener('change', () => {
+                        userProgress.completedLessons[linkedLesson.id] = checkbox.checked;
+                        saveUserProgress(userProgress);
+                        
+                        // Repaint
+                        updateProgressStats();
+                        renderTreeRoadmap();
+                    });
                 }
+
+                chapterChecklistCard.appendChild(item);
             });
-
-            // Auto-expand first chapter on initial topic load
-            if (chIdx === 0) {
-                accordion.classList.add('open');
-            }
-
-            roadmapTreeNodes.appendChild(accordion);
-        });
+        } else {
+            chapterChecklistCard.innerHTML = `<p class="no-outcomes">No specific learning outcomes listed for this chapter.</p>`;
+        }
     }
 
     // 6. View 3: Technical Lesson Reader Renderer
@@ -726,29 +784,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Instant visual feedback repaints
         updateProgressStats();
         
-        // Repaint Tree View counts
-        if (activeTopic) {
-            let total = 0;
-            let completed = 0;
-            activeTopic.chapters.forEach(ch => {
-                ch.lessons.forEach(l => {
-                    total++;
-                    if (userProgress.completedLessons[l.id]) completed++;
-                });
-            });
-            treeProgressRatio.textContent = `${completed}/${total} Mastered (${total > 0 ? Math.round((completed / total) * 100) : 0}%)`;
-
-            // Repaint list borders
-            document.querySelectorAll('.lesson-row-item').forEach(row => {
-                const label = row.querySelector('.lesson-title-label');
-                if (label && label.textContent === activeLesson.title) {
-                    if (lessonMasteredCheck.checked) {
-                        row.classList.add('mastered');
-                    } else {
-                        row.classList.remove('mastered');
-                    }
-                }
-            });
+        // Repaint Tree View
+        if (activeChapter) {
+            renderTreeRoadmap();
         }
     });
 
@@ -758,7 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     sidebarTabTree.addEventListener('click', () => {
-        if (activeTopic) {
+        if (activeTopic && activeChapter) {
             renderTreeRoadmap();
             showView('view-tree');
         }
