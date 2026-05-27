@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual Physics - Interactive Class 11-12 Mechanics Sandbox</title>
+    <title>JEE Prep & Interactive Labs — Elite Academy</title>
     <!-- SEO Meta Tags -->
-    <meta name="description" content="An interactive, high-fidelity 2D projectile motion physics visualizer designed for Class 11-12 students. Tweak velocity, angles, and gravity to see simulated telemetry in real time.">
-    <meta name="keywords" content="Physics Visualizer, Projectile Motion, Mechanics Sandbox, Vector Components, Interactive Physics, Class 11 Physics">
+    <meta name="description" content="An elite, minimalist learning platform for JEE Preparation. Offers interactive theory roadmap, math derivations, and embedded 2D physics simulation laboratories.">
+    <meta name="keywords" content="JEE Main, JEE Advanced, Physics Labs, Interactive Kinematics, Calculus, Chemistry, IIT JEE Preparation">
     <!-- Premium Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,152 +14,294 @@
     <!-- KaTeX for Beautiful Math Formula Rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="dark-theme">
     <div class="app-container">
-        <!-- Sidebar Navigation for Topics -->
+        <!-- Sidebar Brand & Navigation -->
         <aside class="sidebar">
             <div class="brand">
                 <div class="brand-logo">
                     <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        <path d="M2 12h20"></path>
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        <path d="M6 6h10"></path>
+                        <path d="M6 10h10"></path>
                     </svg>
                 </div>
                 <div class="brand-text">
-                    <h2>Visual Physics</h2>
-                    <span>Class 11-12 Laboratory</span>
+                    <h2>Elite JEE Prep</h2>
+                    <span>Interactive Curriculum</span>
                 </div>
             </div>
-            <nav class="nav-tabs" id="dynamic-nav-tabs">
-                <button class="tab-btn active" data-tab="mechanics" id="tab-mechanics">
-                    <span class="icon">🚀</span>
+            
+            <nav class="nav-tabs">
+                <button class="tab-btn active" id="sidebar-tab-home">
+                    <span class="icon">🏠</span>
                     <span class="btn-label">
-                        <span>Mechanics: Projectile Lab</span>
-                        <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Class 11</span>
+                        <span>Course Catalog</span>
+                        <span class="badge badge-indigo">Overview</span>
                     </span>
                 </button>
-                <button class="tab-btn" data-tab="rectilinear" id="tab-rectilinear">
-                    <span class="icon">🏎️</span>
+                <button class="tab-btn" id="sidebar-tab-tree" disabled>
+                    <span class="icon">🗺️</span>
                     <span class="btn-label">
-                        <span>Mechanics: Rectilinear 1D</span>
-                        <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan);">Class 11</span>
+                        <span>Roadmap Tree</span>
+                        <span class="badge" id="sidebar-roadmap-badge">No Topic</span>
                     </span>
                 </button>
-                <button class="tab-btn disabled" data-tab="electrostatics" id="tab-electrostatics" disabled>
-                    <span class="icon">⚡</span>
+                <button class="tab-btn" id="sidebar-tab-lesson" disabled>
+                    <span class="icon">📖</span>
                     <span class="btn-label">
-                        <span>Class 12: Electrostatics</span>
-                        <span class="badge">Locked</span>
-                    </span>
-                </button>
-                <button class="tab-btn disabled" data-tab="optics" id="tab-optics" disabled>
-                    <span class="icon">👁️</span>
-                    <span class="btn-label">
-                        <span>Class 12: Wave Optics</span>
-                        <span class="badge">Locked</span>
+                        <span>Lesson Reader</span>
+                        <span class="badge" id="sidebar-lesson-badge">No Lesson</span>
                     </span>
                 </button>
             </nav>
+
+            <div class="sidebar-stats">
+                <div class="stats-header">
+                    <span>Overall Mastery Progress</span>
+                    <span id="overall-progress-text" class="mono-font">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="overall-progress-bar" style="width: 0%;"></div>
+                </div>
+                <p class="stats-subtext"><span id="overall-completed-count">0</span> of <span id="overall-total-count">0</span> items completed</p>
+            </div>
+
             <div class="sidebar-footer">
-                <p>Designed for Interactive STEM Learning</p>
-                <span class="version">v1.0.0</span>
+                <p>JEE Advanced Sandbox Edition</p>
+                <span class="version">v2.0.0</span>
             </div>
         </aside>
 
-        <!-- Main Workspace -->
+        <!-- Main Dynamic Workspace -->
         <main class="workspace">
-            <header class="top-bar">
-                <div class="header-main">
-                    <h1 id="current-topic-title">Kinematics: 2D Projectile Motion</h1>
-                    <p id="current-topic-desc">Observe how independent horizontal and vertical velocities compose standard parabolic trajectories.</p>
-                </div>
-                <div class="header-badges">
-                    <span class="badge-pill mechanics" id="current-topic-badge">Mechanics Sandbox</span>
-                </div>
-            </header>
-
-            <div class="content-grid">
-                <!-- Simulation Screen -->
-                <div class="canvas-card">
-                    <div class="canvas-header">
-                        <div class="canvas-title">
-                            <span class="status-indicator active"></span>
-                            <span>Interactive Workspace Canvas</span>
-                        </div>
-                        <div class="canvas-actions">
-                            <span class="scale-label" id="scaleIndicator">Scale: 1m = 10px</span>
-                        </div>
-                    </div>
-                    <div class="canvas-container">
-                        <canvas id="physicsCanvas"></canvas>
-                    </div>
-                </div>
-
-                <!-- Live Parameter Controls panel -->
-                <div class="controls-card">
-                    <div class="controls-header">
-                        <h3>Simulation Controls</h3>
-                        <p class="subtitle">Modify environment parameters dynamically</p>
+            
+            <!-- VIEW 1: Main Course Homepage -->
+            <section id="view-home" class="app-view active">
+                <header class="view-header centered">
+                    <div class="header-main">
+                        <h1>JEE Concept Curriculum</h1>
+                        <p>Master fundamental concepts through rigid roadmaps, systematic derivations, and interactive laboratory environments.</p>
                     </div>
                     
-                    <!-- DYNAMIC CONTROLS INJECTED HERE -->
-                    <div class="control-groups-container" id="dynamic-controls-deck"></div>
-
-                    <!-- Simulator Control Actions -->
-                    <div class="button-row">
-                        <button id="launchBtn" class="btn primary">
-                            <span class="btn-icon">🚀</span>
-                            <span>Fire Projectile</span>
-                        </button>
-                    </div>
-                    <div class="button-row secondary-buttons">
-                        <button id="pauseBtn" class="btn secondary" disabled>
-                            <span class="btn-icon" id="pauseIcon">⏸️</span>
-                            <span id="pauseBtnText">Pause</span>
-                        </button>
-                        <button id="clearBtn" class="btn secondary">
-                            <span class="btn-icon">🧹</span>
-                            <span>Clear Canvas</span>
-                        </button>
-                    </div>
-
-                    <!-- DYNAMIC DASHBOARD TELEMETRY INJECTED HERE -->
-                    <div class="telemetry-panel" id="dashboard-panel">
-                        <h4 id="dashboard-title">Live Telemetry Readings</h4>
-                        <div class="telemetry-grid" id="dynamic-dashboard-deck"></div>
-                    </div>
-
-                    <!-- DYNAMIC INSTANTANEOUS INSPECTOR INJECTED HERE -->
-                    <div class="telemetry-panel inspector-panel" id="inspector-panel">
-                        <h4 id="inspector-title">Instantaneous Vector Inspector</h4>
-                        <div class="telemetry-grid inspector-grid" id="dynamic-inspector-deck"></div>
-                    </div>
-
-                    <!-- DYNAMIC THEORETICAL SOLVER INJECTED HERE -->
-                    <div class="telemetry-panel solver-panel" id="solver-panel">
-                        <h4 id="solver-title">Theoretical Time Solver</h4>
-                        <p class="subtitle" id="solver-subtitle" style="font-size: 0.72rem; color: var(--text-dim); margin-top: -6px; margin-bottom: 12px;">Evaluate exact kinematics at any timestamp</p>
-                        
-                        <div class="control-group" id="solver-control-group" style="margin-bottom: 16px;">
-                            <div class="control-label-row">
-                                <label for="timeSolverInput" id="solver-slider-label">Target Time ($t$):</label>
-                                <span class="val-display" style="background: rgba(245, 158, 11, 0.08); color: var(--accent-amber);"><span id="solverTimeVal" class="numeric-val">0.00</span> <span id="solver-unit-label">s</span></span>
-                            </div>
-                            <input type="range" id="timeSolverInput" min="0" max="1" value="0" step="0.01" style="accent-color: var(--accent-amber);">
+                    <!-- Class Selector Segment Controller -->
+                    <div class="segment-controller-wrapper">
+                        <div class="segment-controller">
+                            <input type="radio" id="segment-class11" name="class-select" value="class11" checked>
+                            <label for="segment-class11" class="segment-btn">Class 11 Syllabus</label>
+                            
+                            <input type="radio" id="segment-class12" name="class-select" value="class12">
+                            <label for="segment-class12" class="segment-btn">Class 12 Syllabus</label>
+                            
+                            <span class="segment-indicator"></span>
                         </div>
+                    </div>
+                </header>
 
-                        <div class="telemetry-grid solver-grid" id="dynamic-solver-deck"></div>
+                <div class="subjects-container">
+                    <!-- Physics Subject Column -->
+                    <div class="subject-section" id="subject-physics">
+                        <div class="subject-header">
+                            <span class="subject-icon phy">🚀</span>
+                            <h2>Physics Modules</h2>
+                        </div>
+                        <div class="topics-grid" id="grid-physics">
+                            <!-- Injected Dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Chemistry Subject Column -->
+                    <div class="subject-section" id="subject-chemistry">
+                        <div class="subject-header">
+                            <span class="subject-icon chem">⚡</span>
+                            <h2>Chemistry Modules</h2>
+                        </div>
+                        <div class="topics-grid" id="grid-chemistry">
+                            <!-- Injected Dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Mathematics Subject Column -->
+                    <div class="subject-section" id="subject-mathematics">
+                        <div class="subject-header">
+                            <span class="subject-icon math">📐</span>
+                            <h2>Mathematics Modules</h2>
+                        </div>
+                        <div class="topics-grid" id="grid-mathematics">
+                            <!-- Injected Dynamically -->
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <!-- VIEW 2: The Chapter View with Lessons & Checklist Outcomes -->
+            <section id="view-tree" class="app-view">
+                <header class="view-header">
+                    <button class="back-link-btn" id="btn-tree-back">
+                        <span class="arrow">&lsaquo;</span> Back to Course
+                    </button>
+                    <div class="chapter-header-wrap" style="margin-top: 14px;">
+                        <span class="chapter-meta-index" id="tree-chapter-index">Chapter 01</span>
+                        <h1 id="tree-chapter-title">Rectilinear Motion</h1>
+                        <div class="chapter-progress-row">
+                            <div class="chapter-progress-bar-container">
+                                <div class="chapter-progress-bar-fill" id="tree-chapter-progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-ratio mono-font" id="tree-chapter-progress-text">0/3 completed</span>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="chapter-workspace">
+                    <!-- Left Column: Lessons list -->
+                    <div class="chapter-lessons-col">
+                        <h4 class="col-section-title">Lessons</h4>
+                        <div class="lessons-list" id="chapter-lessons-list">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Learning outcomes checklist -->
+                    <div class="chapter-checklist-col">
+                        <h4 class="col-section-title">Chapter Checklist</h4>
+                        <div class="checklist-card" id="chapter-checklist-card">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 3: Detailed Lesson Blog & Lab View -->
+            <section id="view-lesson" class="app-view">
+                <header class="view-header lesson-header">
+                    <div class="lesson-navigation-row">
+                        <button class="back-link-btn" id="btn-lesson-back">
+                            <span class="arrow">←</span> Back to Roadmap
+                        </button>
+                        
+                        <!-- Circular Mastery Checkbox -->
+                        <div class="mastery-checkbox-container">
+                            <label class="mastery-label" for="lesson-mastered-check">
+                                <span class="label-text">Mark as Mastered</span>
+                                <input type="checkbox" id="lesson-mastered-check">
+                                <span class="custom-check-box">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dual Layout Split Panel (Loads simulator side-by-side with blog if labType is present) -->
+                <div class="lesson-split-workspace" id="lesson-workspace-container">
+                    
+                    <!-- Left Reading Panel (Theory / Blog content) -->
+                    <article class="lesson-blog-article prose" id="lesson-article-body">
+                        <!-- Content Injected Dynamically -->
+                    </article>
+
+                    <!-- Right Physics Laboratory Simulator Panel (Loaded only for lab type lessons) -->
+                    <div class="lesson-physics-lab-panel" id="lesson-lab-container">
+                        <div class="canvas-card">
+                            <div class="canvas-header">
+                                <div class="canvas-title">
+                                    <span class="status-indicator active"></span>
+                                    <span id="lab-canvas-title">Interactive Laboratory Canvas</span>
+                                </div>
+                                <div class="canvas-actions">
+                                    <span class="scale-label" id="scaleIndicator">Scale: 1m = 10px</span>
+                                </div>
+                            </div>
+                            <div class="canvas-container">
+                                <canvas id="physicsCanvas"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="controls-card">
+                            <div class="controls-header">
+                                <h3>Simulation Laboratory</h3>
+                                <p class="subtitle">Tweak values and observe real-time kinematics</p>
+                            </div>
+                            
+                            <!-- Dynamic controls deck for the active lab type -->
+                            <div class="control-groups-container" id="dynamic-controls-deck"></div>
+
+                            <!-- Simulator Buttons -->
+                            <div class="button-row">
+                                <button id="launchBtn" class="btn primary">
+                                    <span class="btn-icon">🚀</span>
+                                    <span>Fire Projectile</span>
+                                </button>
+                            </div>
+                            <div class="button-row secondary-buttons">
+                                <button id="pauseBtn" class="btn secondary" disabled>
+                                    <span class="btn-icon" id="pauseIcon">⏸️</span>
+                                    <span id="pauseBtnText">Pause</span>
+                                </button>
+                                <button id="clearBtn" class="btn secondary">
+                                    <span class="btn-icon">🧹</span>
+                                    <span>Reset Sandbox</span>
+                                </button>
+                            </div>
+
+                            <!-- Telemetry Readouts -->
+                            <div class="telemetry-panel" id="dashboard-panel">
+                                <h4>Live Telemetry Readings</h4>
+                                <div class="telemetry-grid" id="dynamic-dashboard-deck"></div>
+                            </div>
+
+                            <div class="telemetry-panel inspector-panel" id="inspector-panel">
+                                <h4 id="inspector-title">Instantaneous Vector Inspector</h4>
+                                <div class="telemetry-grid inspector-grid" id="dynamic-inspector-deck"></div>
+                            </div>
+
+                            <div class="telemetry-panel solver-panel" id="solver-panel">
+                                <h4 id="solver-title">Theoretical Time Solver</h4>
+                                <p class="subtitle" id="solver-subtitle" style="font-size: 0.72rem; color: var(--text-dim); margin-top: -6px; margin-bottom: 12px;">Evaluate exact kinematics at any timestamp</p>
+                                
+                                <div class="control-group" id="solver-control-group" style="margin-bottom: 16px;">
+                                    <div class="control-label-row">
+                                        <label for="timeSolverInput" id="solver-slider-label">Target Time ($t$):</label>
+                                        <span class="val-display" style="background: rgba(245, 158, 11, 0.08); color: var(--accent-amber);"><span id="solverTimeVal" class="numeric-val">0.00</span> <span id="solver-unit-label">s</span></span>
+                                    </div>
+                                    <input type="range" id="timeSolverInput" min="0" max="1" value="0" step="0.01" style="accent-color: var(--accent-amber);">
+                                </div>
+
+                                <div class="telemetry-grid solver-grid" id="dynamic-solver-deck"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Navigation Loop -->
+                <footer class="lesson-footer-nav">
+                    <button class="btn secondary prev-btn" id="btn-lesson-prev">
+                        <span class="nav-arrow">←</span>
+                        <div class="nav-btn-info">
+                            <span class="nav-label">Previous Lesson</span>
+                            <span class="nav-title" id="prev-lesson-title">Vector Components</span>
+                        </div>
+                    </button>
+                    <button class="btn secondary next-btn" id="btn-lesson-next">
+                        <div class="nav-btn-info">
+                            <span class="nav-label">Next Lesson</span>
+                            <span class="nav-title" id="next-lesson-title">Trajectory Equations</span>
+                        </div>
+                        <span class="nav-arrow">→</span>
+                    </button>
+                </footer>
+            </section>
         </main>
     </div>
 
-    <!-- Script Pipeline (CORS-safe namespaced scripts) -->
+    <!-- Script Pipeline (Curriculum, Engines, View Manager) -->
+    <script src="src/core/curriculum.js"></script>
     <script src="src/core/engine.js"></script>
     <script src="src/core/chapter-base.js"></script>
     <script src="src/chapters/projectile.js"></script>

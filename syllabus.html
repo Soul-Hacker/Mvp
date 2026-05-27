@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoScience JEE Interactive Syllabus Dashboard</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Lucide Icons (Browser Script) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            750: '#20293a',
+                            850: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        .prose-math .katex {
+            font-size: 1.05em;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col antialiased">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Logo & Brand -->
+            <a href="index.html" class="flex items-center gap-3 group shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-fuchsia-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-all">
+                    <i data-lucide="book-open" class="w-5 h-5 text-white"></i>
+                </div>
+                <div class="hidden sm:block">
+                    <span class="font-outfit font-extrabold text-base tracking-tight bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">AlgoScience</span>
+                    <span class="block text-[10px] font-semibold text-cyan-400 uppercase tracking-widest -mt-1">JEE Dashboard</span>
+                </div>
+            </a>
+
+            <!-- Premium Dynamic Search Bar -->
+            <div class="relative flex-grow max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </div>
+                <input 
+                    type="text" 
+                    id="search-input"
+                    class="block w-full pl-10 pr-10 py-1.5 bg-slate-950/60 border border-slate-800 rounded-lg text-slate-200 placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all"
+                    placeholder="Search chapters or subtopics..."
+                >
+                <button 
+                    id="search-clear-btn" 
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300 hidden"
+                >
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/80 border border-slate-700/60 rounded-lg text-xs font-semibold hover:bg-slate-750 text-slate-300 transition-all shrink-0">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                    <span>Core Platform</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Context Switcher Segment Tabs -->
+    <section class="bg-slate-950/40 border-b border-slate-800/40 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-1 bg-slate-900/60 p-1 border border-slate-800 rounded-lg" id="subject-tabs-container">
+                    <button class="px-4 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all uppercase bg-slate-800 text-slate-100 shadow-sm" data-subj="ALL">
+                        All Subjects
+                    </button>
+                    <button class="px-4 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all uppercase text-slate-400 hover:text-slate-200" data-subj="MATHEMATICS">
+                        Mathematics
+                    </button>
+                    <button class="px-4 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all uppercase text-slate-400 hover:text-slate-200" data-subj="PHYSICS">
+                        Physics
+                    </button>
+                    <button class="px-4 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all uppercase text-slate-400 hover:text-slate-200" data-subj="CHEMISTRY">
+                        Chemistry
+                    </button>
+                </div>
+
+                <!-- Global Expansion Triggers (Overview Only) -->
+                <div class="flex items-center gap-2" id="global-accordion-controls">
+                    <button id="btn-expand-all" class="text-xs text-slate-400 hover:text-slate-200 font-semibold px-2.5 py-1.5 rounded bg-slate-800/30 hover:bg-slate-800 transition-all flex items-center gap-1">
+                        <i data-lucide="chevrons-down" class="w-3.5 h-3.5"></i>
+                        <span>Expand All</span>
+                    </button>
+                    <button id="btn-collapse-all" class="text-xs text-slate-400 hover:text-slate-200 font-semibold px-2.5 py-1.5 rounded bg-slate-800/30 hover:bg-slate-800 transition-all flex items-center gap-1">
+                        <i data-lucide="chevrons-up" class="w-3.5 h-3.5"></i>
+                        <span>Collapse All</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Workspace Area -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+        
+        <!-- Loading Shield -->
+        <div id="loading-shield" class="flex-grow flex flex-col items-center justify-center py-20 gap-4">
+            <div class="w-10 h-10 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin"></div>
+            <span class="text-sm font-semibold text-slate-400">Parsing structured syllabus repository...</span>
+        </div>
+
+        <!-- 1. OVERVIEW MODE -->
+        <div id="view-overview" class="hidden flex-grow flex flex-col lg:flex-row gap-8">
+            
+            <!-- Left Sidebar Statistics Panel -->
+            <aside class="w-full lg:w-80 shrink-0 flex flex-col gap-6">
+                
+                <!-- Metrics Card -->
+                <div class="bg-slate-800/40 border border-slate-800/80 backdrop-blur-md rounded-xl p-5 shadow-lg flex flex-col gap-4">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700/40 pb-2 flex items-center gap-2">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-cyan-500"></i>
+                        <span>Syllabus Summary</span>
+                    </h3>
+                    
+                    <div class="flex flex-col gap-4">
+                        <!-- Total Progress -->
+                        <div>
+                            <div class="flex justify-between items-baseline text-xs font-semibold mb-1">
+                                <span class="text-slate-400">Total Progress</span>
+                                <span class="font-mono text-slate-100" id="stat-total-percent">0%</span>
+                            </div>
+                            <div class="h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                                <div id="stat-total-bar" class="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-1 font-mono" id="stat-total-ratio">0 of 0 completed</div>
+                        </div>
+
+                        <!-- Subjects Breakdown -->
+                        <div class="flex flex-col gap-3 pt-2 border-t border-slate-750">
+                            <!-- Mathematics Progress -->
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="flex items-center gap-1.5 font-semibold text-slate-300">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-fuchsia-500"></span>
+                                    <span>Mathematics</span>
+                                </span>
+                                <span class="font-mono text-slate-400" id="stat-math-text">0/0</span>
+                            </div>
+                            <!-- Physics Progress -->
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="flex items-center gap-1.5 font-semibold text-slate-300">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+                                    <span>Physics</span>
+                                </span>
+                                <span class="font-mono text-slate-400" id="stat-physics-text">0/0</span>
+                            </div>
+                            <!-- Chemistry Progress -->
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="flex items-center gap-1.5 font-semibold text-slate-300">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <span>Chemistry</span>
+                                </span>
+                                <span class="font-mono text-slate-400" id="stat-chemistry-text">0/0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Tip Card -->
+                <div class="bg-slate-850/60 border border-slate-800 rounded-xl p-5 shadow-md flex items-start gap-3">
+                    <i data-lucide="rocket" class="w-5 h-5 text-amber-500 shrink-0 mt-0.5"></i>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wide">Documentation System</h4>
+                        <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                            Click a chapter row to drill down into documentation-style **Detail Mode**, including KaTeX mathematical formula rendering and a sticky subtopic reader sidebar.
+                        </p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area: Chapter Checklist Grid -->
+            <section class="flex-grow flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-outfit text-lg font-bold text-slate-200" id="current-subject-header">Syllabus Milestones</h2>
+                    <span class="text-xs font-semibold text-slate-500 font-mono" id="results-count">Showing 0 chapters</span>
+                </div>
+                
+                <div class="flex flex-col gap-3" id="checklist-rows-container">
+                    <!-- Injected Dynamically -->
+                </div>
+            </section>
+
+        </div>
+
+        <!-- 2. DETAIL MODE -->
+        <div id="view-detail" class="hidden flex-grow flex flex-col gap-6">
+            
+            <!-- Breadcrumbs Header -->
+            <nav class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <button id="btn-detail-back" class="flex items-center text-slate-400 hover:text-slate-100 font-semibold text-sm gap-2 transition-all group">
+                    <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-all"></i>
+                    <span>Back to Checklist Overview</span>
+                </button>
+                <div class="flex items-center gap-2 text-xs font-mono text-slate-500" id="detail-breadcrumbs">
+                    <!-- Dynamic -->
+                </div>
+            </nav>
+
+            <div class="flex-grow flex flex-col lg:flex-row gap-8 items-start relative">
+                
+                <!-- Left Study / Reading Document Panel -->
+                <article class="flex-grow bg-slate-850/30 border border-slate-800/80 rounded-2xl p-6 md:p-8 shadow-xl flex flex-col gap-8 w-full lg:max-w-[calc(100%-320px)]">
+                    
+                    <!-- Chapter Banner -->
+                    <div class="flex flex-col gap-3 border-b border-slate-800 pb-6">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-800" id="detail-subject-badge">Subject</span>
+                            <div class="flex items-center gap-3">
+                                <label class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-slate-200 cursor-pointer">
+                                    <input type="checkbox" id="detail-mastery-checkbox" class="w-4.5 h-4.5 rounded border-slate-700 bg-slate-900 transition-all cursor-pointer">
+                                    <span>Completed</span>
+                                </label>
+                            </div>
+                        </div>
+                        <h1 class="font-outfit text-2xl md:text-3xl font-extrabold text-slate-100 leading-tight" id="detail-chapter-title">Chapter Title</h1>
+                    </div>
+
+                    <!-- Reading Document Content Deck -->
+                    <div class="prose prose-invert prose-math max-w-none text-slate-300 text-sm leading-relaxed flex flex-col gap-6" id="detail-prose-body">
+                        <!-- Content compiled dynamically based on Syllabus data -->
+                    </div>
+                </article>
+
+                <!-- Right Sticky "On This Page" Navigation Sidebar -->
+                <aside class="w-full lg:w-72 shrink-0 lg:sticky lg:top-24 flex flex-col gap-4 bg-slate-800/20 border border-slate-800/50 backdrop-blur-md rounded-xl p-5 shadow-lg">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-850 pb-2 flex items-center gap-2">
+                        <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i>
+                        <span>On This Page</span>
+                    </h3>
+                    
+                    <nav class="flex flex-col gap-2 max-h-[60vh] overflow-y-auto pr-1" id="detail-sidebar-links">
+                        <!-- Dynamic subtopic list anchors -->
+                    </nav>
+                </aside>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-800/60 bg-slate-950/40 py-6 text-center text-xs text-slate-500">
+        <p>© 2026 AlgoScience Academy. JEE Syllabus Interface Edition.</p>
+    </footer>
+
+    <!-- Scripts Pipeline -->
+    <script src="src/core/syllabus-parser.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elements Cache
+            const searchInput = document.getElementById('search-input');
+            const searchClearBtn = document.getElementById('search-clear-btn');
+            const subjectTabsContainer = document.getElementById('subject-tabs-container');
+            const globalAccordionControls = document.getElementById('global-accordion-controls');
+            const loadingShield = document.getElementById('loading-shield');
+            
+            const viewOverview = document.getElementById('view-overview');
+            const viewDetail = document.getElementById('view-detail');
+            
+            // Overview Elements
+            const statTotalPercent = document.getElementById('stat-total-percent');
+            const statTotalBar = document.getElementById('stat-total-bar');
+            const statTotalRatio = document.getElementById('stat-total-ratio');
+            const statMathText = document.getElementById('stat-math-text');
+            const statPhysicsText = document.getElementById('stat-physics-text');
+            const statChemistryText = document.getElementById('stat-chemistry-text');
+            const currentSubjectHeader = document.getElementById('current-subject-header');
+            const resultsCount = document.getElementById('results-count');
+            const checklistRowsContainer = document.getElementById('checklist-rows-container');
+            
+            const btnExpandAll = document.getElementById('btn-expand-all');
+            const btnCollapseAll = document.getElementById('btn-collapse-all');
+
+            // Detail Elements
+            const btnDetailBack = document.getElementById('btn-detail-back');
+            const detailBreadcrumbs = document.getElementById('detail-breadcrumbs');
+            const detailSubjectBadge = document.getElementById('detail-subject-badge');
+            const detailMasteryCheckbox = document.getElementById('detail-mastery-checkbox');
+            const detailChapterTitle = document.getElementById('detail-chapter-title');
+            const detailProseBody = document.getElementById('detail-prose-body');
+            const detailSidebarLinks = document.getElementById('detail-sidebar-links');
+
+            // Core State Pointers
+            let syllabusData = null;
+            let activeSubject = 'ALL';
+            let activeChapterId = null;
+            let query = '';
+            let collapsedChapters = {}; // chapterId -> boolean
+            
+            // Completion Store Management
+            const COMPLETION_STORE_KEY = "jee_syllabus_dashboard_completion";
+            let completedChapters = {};
+            
+            function loadCompletionState() {
+                try {
+                    const stored = localStorage.getItem(COMPLETION_STORE_KEY);
+                    if (stored) {
+                        completedChapters = JSON.parse(stored);
+                    }
+                } catch (e) {
+                    console.error("Could not load completion states", e);
+                }
+            }
+
+            function saveCompletionState() {
+                try {
+                    localStorage.setItem(COMPLETION_STORE_KEY, JSON.stringify(completedChapters));
+                } catch (e) {
+                    console.error("Could not save completion states", e);
+                }
+            }
+
+            // Subject Theming Configs
+            const subjectTheming = {
+                "MATHEMATICS": {
+                    border: 'border-fuchsia-500',
+                    text: 'text-fuchsia-400',
+                    bg: 'bg-fuchsia-600',
+                    ring: 'focus:ring-fuchsia-500 text-fuchsia-600',
+                    hover: 'hover:border-fuchsia-500/80',
+                    badge: 'bg-fuchsia-950/80 text-fuchsia-300 border border-fuchsia-900/50'
+                },
+                "PHYSICS": {
+                    border: 'border-cyan-500',
+                    text: 'text-cyan-400',
+                    bg: 'bg-cyan-600',
+                    ring: 'focus:ring-cyan-500 text-cyan-600',
+                    hover: 'hover:border-cyan-500/80',
+                    badge: 'bg-cyan-950/80 text-cyan-300 border border-cyan-900/50'
+                },
+                "CHEMISTRY": {
+                    border: 'border-emerald-500',
+                    text: 'text-emerald-400',
+                    bg: 'bg-emerald-600',
+                    ring: 'focus:ring-emerald-500 text-emerald-600',
+                    hover: 'hover:border-emerald-500/80',
+                    badge: 'bg-emerald-950/80 text-emerald-300 border border-emerald-900/50'
+                }
+            };
+
+            // Fetch and Boot Loader
+            async function bootPlatform() {
+                try {
+                    const response = await fetch('JEE_Main_2025_Syllabus.md');
+                    if (!response.ok) throw new Error("Network syllabus file could not be recovered");
+                    const mdText = await response.text();
+                    
+                    // Parse Markdown into dynamic JSON structure
+                    syllabusData = parseSyllabusMarkdown(mdText);
+                    
+                    // Initialize States
+                    loadCompletionState();
+                    initCollapsibles();
+                    
+                    // Hide loading and show Overview
+                    loadingShield.classList.add('hidden');
+                    viewOverview.classList.remove('hidden');
+                    
+                    // Initial renders
+                    renderOverview();
+                    updateMetrics();
+                    lucide.createIcons();
+                } catch (error) {
+                    console.error("Platform initialization crash:", error);
+                    loadingShield.innerHTML = `
+                        <div class="text-rose-500 font-semibold">Failed to load syllabus file. Please ensure server is running.</div>
+                    `;
+                }
+            }
+
+            // Establish Collapsible Default Object States (All expanded initially)
+            function initCollapsibles() {
+                ['MATHEMATICS', 'PHYSICS', 'CHEMISTRY'].forEach(subj => {
+                    syllabusData[subj].forEach(ch => {
+                        collapsedChapters[ch.id] = false; // expanded
+                    });
+                });
+            }
+
+            // Update Left Sidebar Progress and Ratios
+            function updateMetrics() {
+                if (!syllabusData) return;
+
+                let mathTotal = syllabusData.MATHEMATICS.length;
+                let physTotal = syllabusData.PHYSICS.length;
+                let chemTotal = syllabusData.CHEMISTRY.length;
+                
+                let mathCompleted = syllabusData.MATHEMATICS.filter(c => completedChapters[c.id]).length;
+                let physCompleted = syllabusData.PHYSICS.filter(c => completedChapters[c.id]).length;
+                let chemCompleted = syllabusData.CHEMISTRY.filter(c => completedChapters[c.id]).length;
+
+                let overallTotal = mathTotal + physTotal + chemTotal;
+                let overallCompleted = mathCompleted + physCompleted + chemCompleted;
+
+                // Render metrics elements
+                statMathText.textContent = `${mathCompleted}/${mathTotal}`;
+                statPhysicsText.textContent = `${physCompleted}/${physTotal}`;
+                statChemistryText.textContent = `${chemCompleted}/${chemTotal}`;
+
+                statTotalRatio.textContent = `${overallCompleted} of ${overallTotal} completed`;
+                const pct = overallTotal > 0 ? Math.round((overallCompleted / overallTotal) * 100) : 0;
+                statTotalPercent.textContent = `${pct}%`;
+                statTotalBar.style.width = `${pct}%`;
+            }
+
+            // Overview Mode Checklist Renderer
+            function renderOverview() {
+                if (!syllabusData) return;
+                checklistRowsContainer.innerHTML = '';
+
+                // Header title
+                const subjLabel = activeSubject === 'ALL' ? 'All Syllabus Chapters' : activeSubject.charAt(0) + activeSubject.slice(1).toLowerCase();
+                currentSubjectHeader.textContent = subjLabel;
+
+                // Filter lists based on subject selection
+                let subjectsToRender = activeSubject === 'ALL' ? ['MATHEMATICS', 'PHYSICS', 'CHEMISTRY'] : [activeSubject];
+                let listToRender = [];
+
+                subjectsToRender.forEach(subj => {
+                    syllabusData[subj].forEach(ch => {
+                        // Match with search query
+                        const queryLower = query.toLowerCase();
+                        const matchesTitle = ch.title.toLowerCase().includes(queryLower);
+                        const matchesSubtopics = ch.subtopics.some(s => s.text.toLowerCase().includes(queryLower));
+
+                        if (!query || matchesTitle || matchesSubtopics) {
+                            listToRender.push({
+                                chapter: ch,
+                                subject: subj
+                            });
+                        }
+                    });
+                });
+
+                resultsCount.textContent = `Showing ${listToRender.length} chapters`;
+
+                if (listToRender.length === 0) {
+                    checklistRowsContainer.innerHTML = `
+                        <div class="text-center py-10 text-slate-500 text-sm">No chapters found matching search filters.</div>
+                    `;
+                    return;
+                }
+
+                listToRender.forEach(({ chapter, subject }) => {
+                    const theme = subjectTheming[subject];
+                    const isCompleted = !!completedChapters[chapter.id];
+                    const isCollapsed = !!collapsedChapters[chapter.id];
+
+                    const rowCard = document.createElement('div');
+                    rowCard.className = `flex flex-col bg-slate-850/40 border border-slate-800 rounded-xl overflow-hidden shadow-sm transition-all hover:bg-slate-850/70 border-l-4 ${isCompleted ? 'border-l-emerald-500' : 'border-l-slate-700'} ${theme.hover}`;
+                    rowCard.setAttribute('data-chapter-id', chapter.id);
+
+                    // Row HTML Structure
+                    rowCard.innerHTML = `
+                        <div class="flex items-center justify-between p-4 cursor-pointer" id="row-header-${chapter.id}">
+                            <div class="flex items-center gap-3 flex-grow">
+                                <!-- Circular Checkbox -->
+                                <button class="w-5 h-5 rounded-full border border-slate-600 bg-slate-900 flex items-center justify-center transition-all focus:outline-none shrink-0" id="row-checkbox-${chapter.id}">
+                                    ${isCompleted ? `<div class="w-2.5 h-2.5 rounded-full ${theme.bg}"></div>` : ''}
+                                </button>
+                                
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-1.5">
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ${theme.badge} shrink-0 w-fit">${subject}</span>
+                                    <span class="text-slate-200 font-semibold text-sm leading-snug group-hover:text-white">${chapter.title}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions panel -->
+                            <div class="flex items-center gap-3 shrink-0 ml-3">
+                                <span class="text-[10px] text-slate-500 font-mono font-medium">${chapter.subtopics.length} topics</span>
+                                <button class="text-slate-500 hover:text-slate-300 p-1 transition-all rounded hover:bg-slate-850" id="row-toggle-caret-${chapter.id}">
+                                    <i data-lucide="${isCollapsed ? 'chevron-right' : 'chevron-down'}" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown Nested Subtopics Accordion Area -->
+                        <div class="border-t border-slate-800/40 bg-slate-950/20 px-4 py-3 ${isCollapsed ? 'hidden' : ''}" id="row-accordion-${chapter.id}">
+                            <div class="flex flex-col gap-2 pl-8 border-l border-slate-850">
+                                ${chapter.subtopics.map(s => {
+                                    const isL2 = s.level === 2;
+                                    // Highlight search match in subtopics
+                                    let highlightedText = s.text;
+                                    if (query) {
+                                        const reg = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+                                        highlightedText = s.text.replace(reg, '<mark class="bg-cyan-500/20 text-cyan-300 px-0.5 rounded">$1</mark>');
+                                    }
+                                    return `
+                                        <div class="flex items-start gap-2 text-xs ${isL2 ? 'pl-5 text-slate-400 border-l border-slate-800/50' : 'text-slate-300'}">
+                                            <span class="text-slate-500 select-none mt-0.5 shrink-0">${isL2 ? '•' : '○'}</span>
+                                            <span class="leading-relaxed prose-math">${highlightedText}</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+
+                    // Bind checkbox click (toggle completion)
+                    const checkBtn = rowCard.querySelector(`#row-checkbox-${chapter.id}`);
+                    checkBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        completedChapters[chapter.id] = !completedChapters[chapter.id];
+                        saveCompletionState();
+                        updateMetrics();
+                        renderOverview();
+                    });
+
+                    // Bind header click (navigate into Detail Mode)
+                    const rowHeader = rowCard.querySelector(`#row-header-${chapter.id}`);
+                    rowHeader.addEventListener('click', (e) => {
+                        // Prevent triggers on expand arrow click
+                        if (e.target.closest(`#row-toggle-caret-${chapter.id}`)) return;
+                        
+                        activeChapterId = chapter.id;
+                        renderDetailMode();
+                        showDetailView();
+                    });
+
+                    // Bind accordion caret click (progressive toggle preview)
+                    const caretBtn = rowCard.querySelector(`#row-toggle-caret-${chapter.id}`);
+                    caretBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        collapsedChapters[chapter.id] = !collapsedChapters[chapter.id];
+                        renderOverview();
+                        lucide.createIcons();
+                    });
+
+                    checklistRowsContainer.appendChild(rowCard);
+                });
+
+                lucide.createIcons();
+                // Render KaTeX for equations loaded inside list rows
+                renderMathInElement(checklistRowsContainer, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+
+            // Render Detail Mode Documentation Panel
+            function renderDetailMode() {
+                if (!syllabusData || !activeChapterId) return;
+
+                // Find active chapter object
+                let chObj = null;
+                let chSubj = null;
+                for (let subj of ['MATHEMATICS', 'PHYSICS', 'CHEMISTRY']) {
+                    const found = syllabusData[subj].find(c => c.id === activeChapterId);
+                    if (found) {
+                        chObj = found;
+                        chSubj = subj;
+                        break;
+                    }
+                }
+
+                if (!chObj) return;
+
+                const theme = subjectTheming[chSubj];
+                
+                // Update mastery checkbox state
+                detailMasteryCheckbox.checked = !!completedChapters[chObj.id];
+                
+                // Sync check updates
+                detailMasteryCheckbox.onchange = () => {
+                    completedChapters[chObj.id] = detailMasteryCheckbox.checked;
+                    saveCompletionState();
+                    updateMetrics();
+                };
+
+                // Headings
+                detailSubjectBadge.textContent = chSubj;
+                detailSubjectBadge.className = `px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${theme.badge}`;
+                detailChapterTitle.textContent = chObj.title;
+
+                // Breadcrumbs
+                detailBreadcrumbs.innerHTML = `
+                    <span>JEE Syllabus</span>
+                    <span class="mx-1.5 text-slate-700">/</span>
+                    <span class="text-slate-400 font-semibold">${chSubj.charAt(0) + chSubj.slice(1).toLowerCase()}</span>
+                    <span class="mx-1.5 text-slate-700">/</span>
+                    <span class="text-slate-300 font-semibold truncate max-w-[200px]">Chapter ${chObj.index}</span>
+                `;
+
+                // Build Detail Documentation Prose Body
+                detailProseBody.innerHTML = `
+                    <div class="tip-box bg-slate-800/40 border-l-4 ${theme.border} p-5 rounded-r-xl flex items-start gap-3">
+                        <i data-lucide="info" class="w-5 h-5 ${theme.text} shrink-0 mt-0.5"></i>
+                        <div>
+                            <h4 class="text-xs font-bold ${theme.text} uppercase tracking-wider">Concept Discovery Guide</h4>
+                            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+                                Review the official syllabus units below. To master this segment, read each core concept systematically and cross-reference variables in coordinate or physical graphs.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <h3 class="font-outfit text-base font-bold text-slate-200 border-b border-slate-800/80 pb-2 mt-4">Core Syllabus Framework</h3>
+                    
+                    <div class="flex flex-col gap-8">
+                        ${chObj.subtopics.map((s, idx) => {
+                            const isL2 = s.level === 2;
+                            if (!isL2) {
+                                return `
+                                    <section id="topic-${idx}" class="flex flex-col gap-2 scroll-mt-28">
+                                        <h4 class="font-semibold text-slate-200 flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full ${theme.bg}"></span>
+                                            <span>${s.text}</span>
+                                        </h4>
+                                    </section>
+                                `;
+                            } else {
+                                return `
+                                    <div class="pl-5 border-l border-slate-850 flex items-start gap-2.5 text-xs text-slate-400 -mt-5 scroll-mt-28" id="topic-${idx}">
+                                        <span class="w-1 h-1 rounded-full bg-slate-600 mt-2 shrink-0"></span>
+                                        <span class="leading-relaxed prose-math">${s.text}</span>
+                                    </div>
+                                `;
+                            }
+                        }).join('')}
+                    </div>
+                `;
+
+                // Render Right "On This Page" sticky links
+                detailSidebarLinks.innerHTML = '';
+                chObj.subtopics.forEach((s, idx) => {
+                    const isL2 = s.level === 2;
+                    const anchor = document.createElement('a');
+                    anchor.href = `#topic-${idx}`;
+                    anchor.className = `text-xs transition-all leading-normal ${isL2 ? 'pl-4 text-slate-500 hover:text-slate-300' : 'font-semibold text-slate-400 hover:text-slate-200'}`;
+                    anchor.textContent = s.text;
+                    
+                    anchor.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const target = document.getElementById(`topic-${idx}`);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+
+                    detailSidebarLinks.appendChild(anchor);
+                });
+
+                lucide.createIcons();
+
+                // Render KaTeX in reading panel
+                renderMathInElement(detailProseBody, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+
+            // View switch animations
+            function showDetailView() {
+                viewOverview.classList.add('hidden');
+                globalAccordionControls.classList.add('hidden');
+                viewDetail.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function exitDetailMode() {
+                activeChapterId = null;
+                viewDetail.classList.add('hidden');
+                viewOverview.classList.remove('hidden');
+                globalAccordionControls.classList.remove('hidden');
+                renderOverview();
+                updateMetrics();
+            }
+
+            // Helper to escape regex values inside queries
+            function escapeRegExp(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            // Bind Navigation tabs filter segment clicks
+            subjectTabsContainer.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active button classes
+                    subjectTabsContainer.querySelectorAll('button').forEach(b => {
+                        b.className = "px-4 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all uppercase text-slate-400 hover:text-slate-200";
+                    });
+                    btn.className = "px-4 py-1.5 rounded-md text-xs font-semibold tracking-wide transition-all uppercase bg-slate-800 text-slate-100 shadow-sm";
+                    
+                    activeSubject = btn.getAttribute('data-subj');
+                    renderOverview();
+                });
+            });
+
+            // Bind Search events
+            searchInput.addEventListener('input', () => {
+                query = searchInput.value.trim();
+                if (query) {
+                    searchClearBtn.classList.remove('hidden');
+                } else {
+                    searchClearBtn.classList.add('hidden');
+                }
+                renderOverview();
+            });
+
+            searchClearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                query = '';
+                searchClearBtn.classList.add('hidden');
+                renderOverview();
+            });
+
+            // Bind expand all / collapse all buttons
+            btnExpandAll.addEventListener('click', () => {
+                Object.keys(collapsedChapters).forEach(k => {
+                    collapsedChapters[k] = false;
+                });
+                renderOverview();
+            });
+
+            btnCollapseAll.addEventListener('click', () => {
+                Object.keys(collapsedChapters).forEach(k => {
+                    collapsedChapters[k] = true;
+                });
+                renderOverview();
+            });
+
+            // Detail mode back button click
+            btnDetailBack.addEventListener('click', exitDetailMode);
+
+            // Execute boot loop
+            bootPlatform();
+        });
+    </script>
+</body>
+</html>
