@@ -1,5 +1,7 @@
 {
   "scripts": {
+    "dev": "vite",
+    "start": "vite",
     "test": "jest"
   },
   "dependencies": {
@@ -8,6 +10,7 @@
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
     "jest": "^30.4.2",
-    "jest-environment-jsdom": "^30.4.1"
+    "jest-environment-jsdom": "^30.4.1",
+    "vite": "^5.2.11"
   }
 }
